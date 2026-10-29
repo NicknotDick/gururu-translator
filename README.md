@@ -205,11 +205,3 @@ python -m PyInstaller build/app.spec --noconfirm --clean
 
 ⚠️ 注意：Release 中的预编译 EXE 内嵌了 AGPL-3.0 的 PyMuPDF。个人自用不受约束，
 但对外分发该 EXE 时，AGPL 要求同时提供对应源码。详见 `NOTICES.md`。
-
-## 开源许可
-
-- 本仓库源码：**MIT License**（见 `LICENSE`），作者 Gururu Nick
-- 第三方组件许可与 AGPL 提示：见 **`NOTICES.md`**
-
-⚠️ 注意：Release 中的预编译 EXE 内嵌了 AGPL-3.0 的 PyMuPDF。个人自用不受约束，
-但对外分发该 EXE 时，AGPL 要求同时提供对应源码。详见 `NOTICES.md`。
