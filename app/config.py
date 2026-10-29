@@ -93,6 +93,12 @@ DEFAULTS: dict[str, Any] = {
         "translate_name": False,
         "auto_save": True,
     },
+    # 预览全文模式的显示设置：效果 / 译文字体 / 分布方式
+    "preview": {
+        "fx": "default",
+        "font": "",
+        "dist": "stack",
+    },
     "doc": {
         "skip_header_footer": False,
         "skip_code": True,

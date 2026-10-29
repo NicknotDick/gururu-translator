@@ -79,6 +79,10 @@ def make_icon() -> Path:
     path = BUILD / "app.ico"
     img.save(path, sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)])
 
+    # 窗口图标：与 EXE/桌面快捷方式同源，随 resources/ 打包，保证左上角图标统一
+    img.save(ROOT / "resources" / "icon.ico",
+             sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)])
+
     # 托盘图标：单独一张 PNG，随 resources/ 打包
     tray = ROOT / "resources" / "icon.png"
     img.resize((256, 256), Image.LANCZOS).save(tray)

@@ -20,4 +20,4 @@ def stamp(now: datetime | None = None) -> str:
 
 if __name__ == "__main__":
     s = stamp()
-    print(f"版本号：Gurutu{s}")
+    print(f"版本号：Ver.{s}")

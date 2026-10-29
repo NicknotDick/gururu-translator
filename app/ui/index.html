@@ -98,7 +98,9 @@
               <div class="check-row">
                 <label><input type="checkbox" id="optHeader">同时翻译页眉页脚</label>
                 <label><input type="checkbox" id="optAutoSave" checked>完成后自动输出译文</label>
+                <label><input type="checkbox" id="docTransName">同时翻译文件名</label>
               </div>
+              <small class="hint" id="docTransNameHint" style="margin-top:4px">勾选后输出文件直接使用译名（非法字符自动清理），设置中的文件名后缀失效。</small>
             </div>
             <div class="field">
               <span>输出目录</span>
@@ -187,12 +189,8 @@
                 <div class="field">
                   <span>输出文件名后缀</span>
                   <input type="text" id="setSuffix" class="mono">
-                  <label class="sub-check"><input type="checkbox" id="setTransName">翻译文件名</label>
+                  <small class="hint" id="setSuffixHint">在「文档翻译」页勾选「同时翻译文件名」后，输出直接使用译名，此选项失效。</small>
                 </div>
-              </div>
-              <div class="field" id="transNameHint">
-                <span></span>
-                <small class="hint">勾选后输出文件直接使用译名，后缀选项失效；文件名中的非法字符会自动清理。</small>
               </div>
               <div class="field">
                 <span>输出目录</span>
@@ -309,6 +307,65 @@
         <div class="ts-pop" id="pvTermsPop"></div>
       </div>
       <button class="btn" id="btnPvRetrans">全部重译</button>
+      <div class="pv-cfg-wrap" id="pvCfgWrap">
+        <button class="btn" id="btnPvCfg" title="显示设置">显示设置</button>
+        <div class="pv-cfg-pop hidden" id="pvCfgPop">
+          <div class="pv-cfg-title">显示设置</div>
+          <div class="pv-cfg-sec">
+            <span class="pv-cfg-label">效果</span>
+            <div class="pv-cfg-fx" id="pvCfgFx">
+              <label class="pv-cfg-opt"><input type="radio" name="pvFx" value="default">
+                <div class="pv-cfg-demo">
+                  <b>默认</b>
+                  <div class="dm-src">Only they who fulfil their duties</div>
+                  <div class="dm-tgt">只有在日常事务中尽责的人</div>
+                </div>
+              </label>
+              <label class="pv-cfg-opt"><input type="radio" name="pvFx" value="highlight">
+                <div class="pv-cfg-demo">
+                  <b>高亮</b>
+                  <div class="dm-src">Only they who fulfil their duties</div>
+                  <div class="dm-tgt">只有在日常事务中尽责的人</div>
+                </div>
+              </label>
+              <label class="pv-cfg-opt"><input type="radio" name="pvFx" value="divider">
+                <div class="pv-cfg-demo">
+                  <b>分割线</b>
+                  <div class="dm-src">Only they who fulfil their duties</div>
+                  <div class="dm-tgt">只有在日常事务中尽责的人</div>
+                </div>
+              </label>
+              <label class="pv-cfg-opt"><input type="radio" name="pvFx" value="quote">
+                <div class="pv-cfg-demo">
+                  <b>引用</b>
+                  <div class="dm-src">Only they who fulfil their duties</div>
+                  <div class="dm-tgt">只有在日常事务中尽责的人</div>
+                </div>
+              </label>
+              <label class="pv-cfg-opt"><input type="radio" name="pvFx" value="blur">
+                <div class="pv-cfg-demo">
+                  <b>模糊</b>
+                  <div class="dm-src">Only they who fulfil their duties</div>
+                  <div class="dm-tgt">只有在日常事务中尽责的人</div>
+                </div>
+              </label>
+            </div>
+          </div>
+          <div class="pv-cfg-sec pv-cfg-row2">
+            <div>
+              <span class="pv-cfg-label">译文字体</span>
+              <select id="pvCfgFont"></select>
+            </div>
+            <div>
+              <span class="pv-cfg-label">分布方式</span>
+              <select id="pvCfgDist">
+                <option value="stack">上下同段</option>
+                <option value="col">左右对照</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="spacer"></div>
       <button class="btn" id="btnPvClose">关闭</button>
       <button class="btn primary" id="btnPvSave">保存输出</button>

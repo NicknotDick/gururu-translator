@@ -48,6 +48,20 @@ def already_running() -> bool:
         return False
 
 
+def _window_icon() -> str | None:
+    """窗口左上角图标：与桌面快捷方式同源（resources/icon.ico 由同一图标生成）。"""
+    try:
+        from app.paths import app_dir, resource
+
+        ico = resource("icon.ico")
+        if ico.is_file():
+            return str(ico)
+        dev = app_dir() / "build" / "app.ico"
+        return str(dev) if dev.is_file() else None
+    except Exception:
+        return None
+
+
 def start_tray(window) -> object | None:
     """系统托盘：最小化后驻留通知区，双击恢复，右键可退出。"""
     import time
@@ -441,7 +455,8 @@ def main() -> int:
             except Exception:
                 pass
 
-        webview.start(gui="edgechromium", debug=False, private_mode=False, func=_after_start)
+        webview.start(gui="edgechromium", debug=False, private_mode=False, func=_after_start,
+                      icon=_window_icon())
     except Exception:  # noqa: BLE001
         log.exception("窗口启动失败")
         fatal("窗口启动失败：\n" + traceback.format_exc(limit=3))

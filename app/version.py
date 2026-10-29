@@ -1,6 +1,6 @@
 """程序标识：作者与版本号。
 
-版本号规则：Gurutu + YYMMDDHHMM（打包时刻），例如 Gurutu2610291845。
+版本号规则：Ver. + YYMMDDHHMM（打包时刻），例如 Ver.2610291845。
 """
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pathlib import Path
 
 APP_NAME = "Gururu 翻译"
 AUTHOR = "Gururu Nick"
-BRAND = "Gurutu"
+BRAND = "Ver."   # 版本号前缀，统一 Ver.YYMMDDHHMM
 
 try:
     from ._stamp import STAMP as _STAMP  # type: ignore

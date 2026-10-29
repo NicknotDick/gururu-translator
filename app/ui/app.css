@@ -10,6 +10,7 @@
   --fg3: #6f7a88;
   --accent: #4c8dff;
   --accent2: #2f6fd0;
+  --fx-hl: rgba(76, 141, 255, .20);
   --ok: #35c48a;
   --warn: #e8a33d;
   --err: #ef5b5b;
@@ -44,6 +45,7 @@ body[data-theme="light"] {
   --fg3: #6b7280;
   --accent: #2563eb;
   --accent2: #1d4ed8;
+  --fx-hl: rgba(37, 99, 235, .13);
   --ok: #0f9d6c;
   --warn: #b45309;
   --err: #d92d20;
@@ -564,3 +566,66 @@ button.accent:hover { background: var(--accent-soft-hover); color: var(--fg); bo
 /* ---- 设置：字段下方的次要勾选与提示 ---- */
 .sub-check { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; color: var(--fg2); }
 .field .hint { display: block; font-size: 11px; color: var(--fg3); line-height: 1.5; }
+
+/* ---- 预览显示设置面板 ---- */
+.pv-cfg-wrap { position: relative; flex: 0 0 auto; }
+.pv-cfg-pop {
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 40;
+  width: 268px; padding: 12px 13px 13px;
+  background: var(--panel2); border: 1px solid var(--line2);
+  border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,.22);
+}
+.pv-cfg-title { font-size: 12.5px; font-weight: 600; margin-bottom: 8px; color: var(--fg); }
+.pv-cfg-sec { padding: 8px 0 0; border-top: 1px solid var(--line); }
+.pv-cfg-sec:first-of-type { border-top: 0; padding-top: 0; }
+.pv-cfg-label { display: block; font-size: 11px; color: var(--fg3); margin-bottom: 5px; }
+.pv-cfg-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+.pv-cfg-row2 select { width: 100%; }
+.pv-cfg-fx { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.pv-cfg-opt { cursor: pointer; }
+.pv-cfg-opt input { position: absolute; opacity: 0; pointer-events: none; }
+.pv-cfg-demo {
+  border: 1px solid var(--line); border-radius: 8px; padding: 6px 7px;
+  background: var(--panel); font-size: 10.5px; line-height: 1.45;
+}
+.pv-cfg-opt input:checked + .pv-cfg-demo {
+  border-color: var(--accent); background: var(--sel-bg);
+}
+.pv-cfg-demo b { display: block; font-size: 10px; color: var(--fg3); margin-bottom: 2px; font-weight: 500; }
+.pv-cfg-demo .dm-src { color: var(--fg3); font-size: 9.5px; }
+.pv-cfg-demo .dm-tgt { color: var(--fg); margin-top: 1px; }
+/* 面板内的效果示意（与正文效果一一对应） */
+.pv-cfg-opt[class] .dm-tgt { /* noop */ }
+input[value=highlight] + .pv-cfg-demo .dm-tgt {
+  background: var(--fx-hl); border-radius: 3px; padding: 0 3px;
+}
+input[value=divider] + .pv-cfg-demo .dm-tgt {
+  border-top: 1px dashed var(--fg3); padding-top: 2px; margin-top: 3px;
+}
+input[value=quote] + .pv-cfg-demo .dm-tgt {
+  border-left: 3px solid var(--accent); padding-left: 5px; color: var(--fg2);
+}
+input[value=blur] + .pv-cfg-demo .dm-src {
+  filter: blur(2px); opacity: .55;
+}
+input[value=blur] + .pv-cfg-demo .dm-tgt { font-weight: 600; }
+
+/* ---- 全文预览：效果（只作用于译文） ---- */
+.pv-fx-highlight .pv-ft-tgt {
+  background: var(--fx-hl); border-radius: 4px; padding: 1px 5px;
+}
+.pv-fx-divider .pv-ft-tgt {
+  border-top: 1px dashed var(--fg3); padding-top: 5px; margin-top: 3px;
+}
+.pv-fx-quote .pv-ft-tgt {
+  border-left: 3px solid var(--accent); padding-left: 9px; color: var(--fg2);
+}
+.pv-fx-blur .pv-ft-src { filter: blur(2.2px); opacity: .5; }
+.pv-fx-blur .pv-ft-tgt { font-weight: 600; }
+
+/* ---- 全文预览：分布方式 左右对照 ---- */
+.pv-dist-col .pv-ft-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start;
+}
+.pv-dist-col .pv-ft-src { margin-bottom: 0; font-size: 12.5px; line-height: 1.6; }
+.pv-dist-col .pv-ft-idx { right: 6px; }

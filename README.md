@@ -9,7 +9,7 @@ Windows 单文件绿色版翻译工具。默认打开即为「中文 → 英语�
 - 可接入 DeepSeek / OpenAI / 通义 / 智谱 / Kimi 或任意 OpenAI 兼容端点，启用翻译风格与行业术语强制锁定
 - 支持仅译文与双语对照两种输出，翻译后可在预览界面逐段修改，并可用 AI 按指令实时调整译文
 
-**作者**：Gururu Nick　**版本**：Gurutu + 打包时刻（YYMMDDHHMM），如 `Gurutu2610291849`
+**作者**：Gururu Nick　**版本**：Ver. + 打包时刻（YYMMDDHHMM），如 `Ver.2610291849`
 
 ## 快速开始
 
@@ -129,12 +129,12 @@ output/              默认译文输出目录
 窗口**右下角**常驻显示版本号、作者与签名：
 
 ```
-Gurutu2610292005 · Gururu Nick
+Ver.2610292005 · Gururu Nick
 ```
 
 签名「一切很美 只因有你」保留在【关于】弹窗内，状态栏不再显示，避免英文界面下出现中文。
 
-点击这一块弹出「关于」窗口，可查看软件名、作者、版本（`Gurutu + YYMMDDHHMM`）、构建时间、运行环境、数据目录与支持的格式，并可一键打开数据目录。
+点击这一块弹出「关于」窗口，可查看软件名、作者、版本（`Ver. + YYMMDDHHMM`）、构建时间、运行环境、数据目录与支持的格式，并可一键打开数据目录。
 
 ## 托盘与最小化
 
@@ -181,7 +181,7 @@ python tools/build.py              # 一键构建：刷版本号 → 生成图�
 `tools/build.py` 等价于依次执行：
 
 ```bash
-python tools/stamp_version.py      # 版本号 = Gurutu + 当前 YYMMDDHHMM
+python tools/stamp_version.py      # 版本号 = Ver. + 当前 YYMMDDHHMM
 python tools/make_assets.py        # 生成图标与启动图
 python tools/embed_ui.py           # 前端内联为 app/ui_bundle.py
 python -m PyInstaller build/app.spec --noconfirm --clean

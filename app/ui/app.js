@@ -60,6 +60,22 @@ const EN = {
   '默认风格': 'Default style',
   '输出文件名后缀': 'Filename suffix',
   '翻译文件名': 'Translate file names',
+  '同时翻译文件名': 'Translate file names too',
+  '在「文档翻译」页勾选「同时翻译文件名」后，输出直接使用译名，此选项失效。':
+    'Once "Translate file names" is checked on the Documents page, output uses the translated name and this is ignored.',
+  '勾选后输出文件直接使用译名（非法字符自动清理），设置中的文件名后缀失效。':
+    'Output files use the translated name (illegal chars removed); the suffix option in Settings is ignored.',
+  '显示设置': 'Display settings',
+  '效果': 'Effect',
+  '译文字体': 'Translation font',
+  '分布方式': 'Layout',
+  '上下同段': 'Stacked',
+  '左右对照': 'Side by side',
+  '默认': 'Default',
+  '高亮': 'Highlight',
+  '分割线': 'Divider',
+  '引用': 'Quote',
+  '模糊': 'Blur',
   '逐段对照': 'By segment',
   '全文预览': 'Full text',
   '启用翻译记忆缓存': 'Translation memory',
@@ -201,6 +217,7 @@ const state = {
   pvSel: new Set(),
   pvShown: 0,
   pvView: 'seg',
+  pvCfg: { fx: 'default', font: '', dist: 'stack' },
   outDir: '',
   theme: 'auto',
   lang: 'zh',
@@ -442,6 +459,25 @@ function bindEvents() {
       b.onclick = () => setPvView(b.dataset.view);
     });
   }
+  const cfgBtn = $('btnPvCfg');
+  if (cfgBtn) {
+    cfgBtn.onclick = (e) => { e.stopPropagation(); togglePvCfg(); };
+  }
+  const cfgPop = $('pvCfgPop');
+  if (cfgPop) {
+    cfgPop.onclick = (e) => e.stopPropagation();
+  }
+  document.querySelectorAll('input[name=pvFx]').forEach((r) => {
+    r.onchange = () => setPvCfg('fx', r.value);
+  });
+  const cfgFont = $('pvCfgFont');
+  if (cfgFont) cfgFont.onchange = () => setPvCfg('font', cfgFont.value);
+  const cfgDist = $('pvCfgDist');
+  if (cfgDist) cfgDist.onchange = () => setPvCfg('dist', cfgDist.value);
+  document.addEventListener('click', () => {
+    const p = $('pvCfgPop');
+    if (p && !p.classList.contains('hidden')) p.classList.add('hidden');
+  });
 
   document.querySelectorAll('#page-settings input').forEach((el) => {
     el.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveSettings(); });
@@ -789,6 +825,72 @@ async function openPreview(jid) {
   renderPv();
 }
 
+/* ---- 预览显示设置：效果 / 字体 / 分布方式 ---- */
+const PV_FONTS = [
+  ['', 'default'],
+  ['msyh', '微软雅黑'],
+  ['songti', '宋体'],
+  ['heiti', '黑体'],
+  ['kaiti', '楷体'],
+  ['fangsong', '仿宋'],
+  ['times', 'Times New Roman'],
+  ['arial', 'Arial'],
+  ['calibri', 'Calibri'],
+  ['georgia', 'Georgia'],
+];
+const FONT_CSS = {
+  msyh: '"Microsoft YaHei", "微软雅黑", sans-serif',
+  songti: '"SimSun", "宋体", serif',
+  heiti: '"SimHei", "黑体", sans-serif',
+  kaiti: '"KaiTi", "楷体", serif',
+  fangsong: '"FangSong", "仿宋", serif',
+  times: '"Times New Roman", serif',
+  arial: 'Arial, sans-serif',
+  calibri: 'Calibri, sans-serif',
+  georgia: 'Georgia, serif',
+};
+const FONT_KEY = { default: '', 微软雅黑: 'msyh', 宋体: 'songti', 黑体: 'heiti', 楷体: 'kaiti', 仿宋: 'fangsong' };
+
+function cssFont(key) {
+  return FONT_CSS[key] || (key && !key.includes(' ') && key !== 'default' ? key : '');
+}
+
+function fillPvFonts(cur) {
+  const sel = $('pvCfgFont');
+  if (!sel) return;
+  sel.innerHTML = PV_FONTS.map(([k, n]) =>
+    `<option value="${k}">${k === '' ? L('默认', 'Default') : n}</option>`).join('');
+  sel.value = cur || '';
+}
+
+function applyPvCfgToForm() {
+  const c = state.pvCfg || {};
+  const fx = document.querySelector('input[name=pvFx][value="' + (c.fx || 'default') + '"]');
+  if (fx) fx.checked = true;
+  fillPvFonts(c.font);
+  const d = $('pvCfgDist');
+  if (d) d.value = c.dist || 'stack';
+}
+
+async function savePvCfg() {
+  const r = await api('save_settings', { preview: { ...state.pvCfg } });
+  if (r && r.ok && r.settings) state.boot.settings = r.settings;
+}
+
+function setPvCfg(k, v) {
+  state.pvCfg = { ...(state.pvCfg || {}), [k]: v };
+  if (state.pvView === 'full' && state.pvDoc) renderPv();
+  savePvCfg();
+}
+
+function togglePvCfg(force) {
+  const pop = $('pvCfgPop');
+  if (!pop) return;
+  const show = typeof force === 'boolean' ? force : pop.classList.contains('hidden');
+  pop.classList.toggle('hidden', !show);
+  if (show) applyPvCfgToForm();
+}
+
 function setPvView(v) {
   state.pvView = v === 'full' ? 'full' : 'seg';
   const vs = $('pvViewSeg');
@@ -804,6 +906,7 @@ function setPvView(v) {
 }
 
 function closePreview() {
+  togglePvCfg(false);
   $('preview').classList.add('hidden');
   state.pvDoc = null;
   state.pvJid = null;
@@ -868,7 +971,10 @@ function renderPvFull() {
   const body = $('pvBody');
   const segs = doc.segments;
   const bi = pvModeValue() === 'bilingual';
-  let html = `<div class="pv-full">`;
+  const cfg = state.pvCfg || {};
+  const cls = `pv-full pv-fx-${esc(cfg.fx || 'default')} pv-dist-${esc(cfg.dist || 'stack')}`;
+  const fam = cfg.font ? `font-family:${cssFont(cfg.font)}` : '';
+  let html = `<div class="${cls}"${fam ? ` style="${fam}"` : ''}>`;
   let lastGroup = null;
   segs.forEach((s, idx) => {
     const g = s.group || '';
@@ -892,14 +998,17 @@ function renderPvFull() {
 }
 
 function syncTransName() {
-  const on = !!$('setTransName').checked;
+  const el = $('docTransName') || $('setTransName');
+  const on = !!el && el.checked;
   const sf = $('setSuffix');
   if (sf) {
     sf.disabled = on;
-    sf.title = on ? L('已启用「翻译文件名」，输出直接使用译名，后缀失效',
-      'Translate file names is on — output uses the translated name, suffix ignored') : '';
+    sf.title = on ? L('已在「文档翻译」页启用「同时翻译文件名」，输出直接使用译名，后缀失效',
+      '"Translate file names" is on — output uses the translated name, suffix ignored') : '';
     sf.style.opacity = on ? '.55' : '';
   }
+  const hint = $('setSuffixHint');
+  if (hint) hint.style.opacity = on ? '1' : '.7';
 }
 
 function updatePvStat() {
@@ -1089,9 +1198,19 @@ function loadSettingsForm(b) {
   });
   if (tr.style) $('setStyle').value = tr.style;
   $('setSuffix').value = out.suffix || '_译文';
-  $('setTransName').checked = !!out.translate_name;
+  const pv = s.preview || {};
+  state.pvCfg = { fx: pv.fx || 'default', font: pv.font || '', dist: pv.dist || 'stack' };
+  applyPvCfgToForm();
+  const dtn = $('docTransName');
+  if (dtn) {
+    dtn.checked = !!out.translate_name;
+    dtn.onchange = async () => {
+      syncTransName();
+      const r = await api('save_settings', { output: { translate_name: dtn.checked } });
+      if (r && r.ok && r.settings) state.boot.settings = r.settings;
+    };
+  }
   syncTransName();
-  $('setTransName').onchange = syncTransName;
   $('setStartPage').value = (s.ui && s.ui.start_page) || 'text';
   state.outDir = out.dir || b.output_dir || '';
   updateDirButtons();
@@ -1517,7 +1636,7 @@ async function saveSettings() {
     output: {
       dir: $('btnSetOutDir').textContent.trim(),
       suffix: $('setSuffix').value || '_译文',
-      translate_name: $('setTransName').checked,
+      translate_name: !!($('docTransName') || $('setTransName') || {}).checked,
       auto_save: $('optAutoSave').checked,
     },
     doc: { skip_header_footer: !$('optHeader').checked },
