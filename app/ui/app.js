@@ -268,6 +268,9 @@ async function boot() {
     $('appVer').textContent = b.version || '';
     $('appBuild').textContent = vp.date ? vp.date + ' ' + vp.time : '';
     $('dataDir').textContent = b.data_dir || '';
+    if (b.data_fallback) {
+      $('dataDir').textContent += (L('（程序目录不可写，已自动转存到此处）', ' (program folder is read-only; data saved here instead)'));
+    }
     state.outDir = b.output_dir || '';
     applyLang((((s.ui || {}).lang) || 'zh'), false);
     refreshTm(b.tm);

@@ -18,7 +18,7 @@ from ..core.terms import build_glossary, termbook
 from ..core.tm import tm
 from ..engines.chain import Translator, test_llm
 from ..parsers.registry import SUPPORTED_EXTS, describe
-from ..paths import app_dir, open_in_explorer
+from ..paths import app_dir, data_dir, open_in_explorer, using_fallback as paths_using_fallback
 from ..version import APP_NAME, AUTHOR, version, version_parts
 
 APP_TITLE = APP_NAME
@@ -56,7 +56,8 @@ class Bridge:
             "key_mask": (key[:4] + "********" + key[-4:]) if len(key) > 8 else ("已配置" if key else ""),
             "tm": tm.stats(),
             "output_dir": str(settings.output_dir()),
-            "data_dir": str(app_dir() / "data"),
+            "data_dir": str(data_dir()),
+            "data_fallback": paths_using_fallback(),
             "engine_ready": _engine_ready(),
             "runtime": f"Python {sys.version.split()[0]} · WebView2",
         }

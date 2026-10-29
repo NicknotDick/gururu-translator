@@ -205,3 +205,15 @@ python -m PyInstaller build/app.spec --noconfirm --clean
 
 ⚠️ 注意：Release 中的预编译 EXE 内嵌了 AGPL-3.0 的 PyMuPDF。个人自用不受约束，
 但对外分发该 EXE 时，AGPL 要求同时提供对应源码。详见 `NOTICES.md`。
+
+## 存放位置说明
+
+程序可放在任意可写目录（桌面、D 盘根目录、U 盘等）。**不建议放在 `Program Files`、`C:/Program Files (x86)` 等系统受保护目录**——这类目录普通权限无法写入。
+
+若检测到程序目录不可写，程序会自动把 `data/` 与 `output/` 转存到：
+
+```
+%LOCALAPPDATA%\Gururu 翻译\
+```
+
+设置 → 缓存与运行 中显示的即为实际数据目录，可点击直接打开。
