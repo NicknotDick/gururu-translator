@@ -66,10 +66,24 @@ class FileResult:
 
 def output_path_for(src: str, out_dir: str | Path, suffix: str,
                     stem: str | None = None) -> Path:
-    """输出路径。stem 非空时（翻译文件名）直接以该名称命名，忽略后缀。"""
+    """输出路径。stem 非空时（翻译文件名）直接以该名称命名，忽略后缀。
+
+    目标目录不可写（如放在 Program Files 等受保护目录）时，
+    自动降级到默认输出目录，避免写回失败。
+    """
+    from ..paths import default_output_dir
+
     p = Path(src)
     name = (stem or "").strip() or f"{p.stem}{suffix}"
-    return Path(out_dir) / f"{name}{p.suffix}"
+    d = Path(out_dir)
+    try:
+        d.mkdir(parents=True, exist_ok=True)
+        probe = d / ".write_test"
+        probe.write_bytes(b"")
+        probe.unlink(missing_ok=True)
+    except OSError:
+        d = default_output_dir()
+    return d / f"{name}{p.suffix}"
 
 
 _BAD_NAME_CHARS = re.compile(r'[\\/:*?"<>|\r\n\t]')

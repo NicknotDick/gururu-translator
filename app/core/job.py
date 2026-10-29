@@ -191,12 +191,22 @@ class JobManager:
                 job.warnings = list(job.warnings or []) + [warn]
         out = output_path_for(job.path, settings.output_dir(),
                               str(settings.get("output.suffix") or "_译文"), stem=stem)
+        moved_out = False
+        try:
+            moved_out = (Path(out).resolve().parent
+                         != Path(settings.output_dir()).resolve())
+        except OSError:
+            pass
         res = translate_document(job.path, opts, out, on_prog, self._cancel)
 
         job.segments = res.segments
         job.translated = res.translated
         job.failed = res.failed
         job.warnings = res.warnings
+        if moved_out:
+            job.warnings = list(job.warnings or []) + [
+                tr("输出目录不可写，译文已改存到：", "Output dir not writable, saved to: ")
+                + str(Path(out).parent)]
         job.output = res.output
         job.elapsed = res.elapsed
         if res.ok:
