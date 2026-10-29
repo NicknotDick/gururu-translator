@@ -5,6 +5,7 @@ import html
 import re
 from typing import Any
 
+from ..core.i18n import tr
 from ..core.ir import is_translatable
 from .base import MODE_BILINGUAL, BaseParser, Holder
 
@@ -99,6 +100,7 @@ class PdfParser(BaseParser):
                     obj=None,
                     extra={
                         "page": pno,
+                        "group": tr(f"第 {pno} 页", f"Page {pno}"),
                         "bbox": tuple(block.get("bbox") or (0, 0, 0, 0)),
                         "size": max_size or 10.0,
                         "color": _hex_color(color),

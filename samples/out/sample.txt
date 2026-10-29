@@ -1,0 +1,3 @@
+This is a long piece of text that has been broken up by hard wrapping and needs to be merged before translation.
+
+The second paragraph contains URL https://example.com and mailbox a@b.com.

@@ -71,7 +71,8 @@ class XlsxParser(BaseParser):
                         kind="cell",
                         text=v,
                         obj=cell,
-                        extra={"sheet": ws.title, "row": cell.row, "col": cell.column},
+                        extra={"sheet": ws.title, "row": cell.row, "col": cell.column,
+                               "group": ws.title},
                     ))
         return wb, holders
 

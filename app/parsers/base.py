@@ -52,6 +52,7 @@ class BaseParser:
                     src=h.text,
                     send=str(h.extra.get("masked") or ""),
                     kind=h.kind,
+                    group=str(h.extra.get("group") or ""),
                     loc=i,
                 )
             )

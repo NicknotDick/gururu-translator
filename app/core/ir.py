@@ -22,6 +22,7 @@ class Segment:
     tgt: str = ""
     status: str = STATUS_PENDING
     kind: str = "para"            # para|heading|cell|shape|code|meta|title
+    group: str = ""               # 所属分组（幻灯片页 / 工作表 / PDF 页），用于全文预览
     loc: Any = None               # 解析器内部定位数据（不跨界序列化）
     note: str = ""
     send: str = ""                # 实际送引擎的文本（含保护占位符）；为空则用 src
@@ -37,6 +38,7 @@ class Segment:
             "tgt": self.tgt,
             "status": self.status,
             "kind": self.kind,
+            "group": self.group,
             "note": self.note,
         }
 

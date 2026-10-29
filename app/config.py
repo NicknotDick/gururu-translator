@@ -90,6 +90,7 @@ DEFAULTS: dict[str, Any] = {
     "output": {
         "dir": "",
         "suffix": "_译文",
+        "translate_name": False,
         "auto_save": True,
     },
     "doc": {

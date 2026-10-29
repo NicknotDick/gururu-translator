@@ -59,6 +59,9 @@ const EN = {
   '公共引擎': 'Free engine',
   '默认风格': 'Default style',
   '输出文件名后缀': 'Filename suffix',
+  '翻译文件名': 'Translate file names',
+  '逐段对照': 'By segment',
+  '全文预览': 'Full text',
   '启用翻译记忆缓存': 'Translation memory',
   '大语言模型（可选）': 'Large language model (optional)',
   '服务商模板': 'Provider',
@@ -197,6 +200,7 @@ const state = {
   pvDoc: null,
   pvSel: new Set(),
   pvShown: 0,
+  pvView: 'seg',
   outDir: '',
   theme: 'auto',
   lang: 'zh',
@@ -432,6 +436,12 @@ function bindEvents() {
   $('btnPvAi').onclick = aiRefine;
   $('pvInstr').addEventListener('keydown', (e) => { if (e.key === 'Enter') aiRefine(); });
   $('pvMode').onchange = () => { if (state.pvDoc) renderPv(); };
+  const vs = $('pvViewSeg');
+  if (vs) {
+    vs.querySelectorAll('button').forEach((b) => {
+      b.onclick = () => setPvView(b.dataset.view);
+    });
+  }
 
   document.querySelectorAll('#page-settings input').forEach((el) => {
     el.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveSettings(); });
@@ -763,7 +773,10 @@ async function openPreview(jid) {
   state.pvDoc = r.doc;
   state.pvShown = 0;
   state.pvSel = new Set();
+  state.pvView = 'seg';
   updateSelInfo();
+  const vs0 = $('pvViewSeg');
+  if (vs0) vs0.querySelectorAll('button').forEach((b) => b.classList.toggle('active', b.dataset.view === 'seg'));
   $('pvName').textContent = r.job.name + ' · '
     + L(r.doc.segments.length + ' 段', r.doc.segments.length + ' seg');
   $('pvMode').value = r.mode || 'target_only';
@@ -773,6 +786,20 @@ async function openPreview(jid) {
   $('preview').classList.remove('hidden');
   $('pvBody').innerHTML = '';
   updateTermButtons();
+  renderPv();
+}
+
+function setPvView(v) {
+  state.pvView = v === 'full' ? 'full' : 'seg';
+  const vs = $('pvViewSeg');
+  if (vs) {
+    vs.querySelectorAll('button').forEach((b) => {
+      b.classList.toggle('active', b.dataset.view === state.pvView);
+    });
+  }
+  if (!state.pvDoc) return;
+  state.pvShown = 0;
+  $('pvBody').innerHTML = '';
   renderPv();
 }
 
@@ -787,6 +814,11 @@ function pvModeValue() {
 }
 
 function renderPv() {
+  if (state.pvView === 'full') return renderPvFull();
+  return renderPvSeg();
+}
+
+function renderPvSeg() {
   const doc = state.pvDoc;
   if (!doc) return;
   const body = $('pvBody');
@@ -797,7 +829,7 @@ function renderPv() {
   const html = slice.map((s, k) => {
     const idx = state.pvShown + k;
     const selCls = state.pvSel.has(s.sid) ? ' sel' : '';
-    return `<div class="pv-row st-${s.status}${selCls}" data-sid="${s.sid}" data-i="${idx}">
+    return `<div class="pv-row st-${s.status}${selCls}" data-sid="${s.sid}" data-v="pv-row" data-i="${idx}">
       <div class="pv-src">${esc(s.src)}</div>
       <div class="pv-tgt" contenteditable="true" spellcheck="false">${esc(s.tgt)}</div>
       <i class="pv-dot" title="${esc(s.note || s.status)}"></i>
@@ -830,6 +862,46 @@ function renderPv() {
   bindPvEditing(slice);
 }
 
+function renderPvFull() {
+  const doc = state.pvDoc;
+  if (!doc) return;
+  const body = $('pvBody');
+  const segs = doc.segments;
+  const bi = pvModeValue() === 'bilingual';
+  let html = `<div class="pv-full">`;
+  let lastGroup = null;
+  segs.forEach((s, idx) => {
+    const g = s.group || '';
+    if (g !== lastGroup) {
+      if (g) html += `<div class="pv-ft-group">${esc(g)}</div>`;
+      lastGroup = g;
+    }
+    const selCls = state.pvSel.has(s.sid) ? ' sel' : '';
+    const srcHtml = bi ? `<div class="pv-ft-src">${esc(s.src)}</div>` : '';
+    html += `<div class="pv-ft-row st-${s.status} k-${esc(s.kind || 'para')}${selCls}"`
+      + ` data-sid="${s.sid}" data-v="pv-ft-row">`
+      + `<span class="pv-ft-idx">${idx + 1}</span>`
+      + srcHtml
+      + `<div class="pv-ft-tgt" contenteditable="true" spellcheck="false">${esc(s.tgt)}</div>`
+      + `</div>`;
+  });
+  html += '</div>';
+  body.innerHTML = html;
+  updatePvStat();
+  bindPvEditing(segs, '.pv-ft-row');
+}
+
+function syncTransName() {
+  const on = !!$('setTransName').checked;
+  const sf = $('setSuffix');
+  if (sf) {
+    sf.disabled = on;
+    sf.title = on ? L('已启用「翻译文件名」，输出直接使用译名，后缀失效',
+      'Translate file names is on — output uses the translated name, suffix ignored') : '';
+    sf.style.opacity = on ? '.55' : '';
+  }
+}
+
 function updatePvStat() {
   const segs = state.pvDoc ? state.pvDoc.segments : [];
   const cnt = (st) => segs.filter((s) => s.status === st).length;
@@ -843,12 +915,12 @@ function updatePvStat() {
     `<span class="dim">${L('修改后点「保存输出」写回文件', 'Click “Save output” to write changes')}</span>`;
 }
 
-function bindPvEditing(slice) {
+function bindPvEditing(slice, rowSel = '.pv-row') {
   const body = $('pvBody');
   slice.forEach((s) => {
-    const row = body.querySelector(`.pv-row[data-sid="${s.sid}"]`);
+    const row = body.querySelector(`${rowSel}[data-sid="${s.sid}"]`);
     if (!row) return;
-    const src = row.querySelector('.pv-src');
+    const src = row.querySelector(rowSel === '.pv-ft-row' ? '.pv-ft-src' : '.pv-src');
     if (src) {
       src.addEventListener('click', () => {
         if (state.pvSel.has(s.sid)) state.pvSel.delete(s.sid);
@@ -857,7 +929,7 @@ function bindPvEditing(slice) {
         updateSelInfo();
       });
     }
-    const cell = row.querySelector('.pv-tgt');
+    const cell = row.querySelector(rowSel === '.pv-ft-row' ? '.pv-ft-tgt' : '.pv-tgt');
     let composing = false;
     cell.addEventListener('compositionstart', () => { composing = true; });
     cell.addEventListener('compositionend', () => { composing = false; scheduleEdit(row, cell); });
@@ -873,7 +945,8 @@ function scheduleEdit(row, cell, delay = 0) {
     const text = cell.textContent;
     const seg = state.pvDoc.segments.find((x) => x.sid === sid);
     if (seg) { seg.tgt = text; seg.status = text.trim() ? 'edited' : seg.status; }
-    row.className = 'pv-row st-' + (seg ? seg.status : 'done');
+    const selCls = state.pvSel.has(sid) ? ' sel' : '';
+    row.className = (row.dataset.v || 'pv-row') + ' st-' + (seg ? seg.status : 'done') + selCls;
     updatePvStat();
     try { await api('edit_segment', state.pvJid, sid, text); } catch (e) { /* 忽略 */ }
   }, delay));
@@ -955,10 +1028,12 @@ function applySegUpdates(list) {
     if (n) { s.tgt = n.tgt; s.status = n.status; s.note = n.note; }
   });
   list.forEach((n) => {
-    const row = document.querySelector(`.pv-row[data-sid="${n.sid}"]`);
+    const row = document.querySelector(`.pv-row[data-sid="${n.sid}"]`)
+      || document.querySelector(`.pv-ft-row[data-sid="${n.sid}"]`);
     if (!row) return;
-    row.className = 'pv-row st-' + n.status + (state.pvSel.has(n.sid) ? ' sel' : '');
-    const cell = row.querySelector('.pv-tgt');
+    row.className = (row.dataset.v || 'pv-row') + ' st-' + n.status
+      + (state.pvSel.has(n.sid) ? ' sel' : '');
+    const cell = row.querySelector('.pv-tgt, .pv-ft-tgt');
     if (cell && cell.textContent !== n.tgt) cell.textContent = n.tgt;
     const dot = row.querySelector('.pv-dot');
     if (dot) dot.setAttribute('title', n.note || n.status);
@@ -1014,6 +1089,9 @@ function loadSettingsForm(b) {
   });
   if (tr.style) $('setStyle').value = tr.style;
   $('setSuffix').value = out.suffix || '_译文';
+  $('setTransName').checked = !!out.translate_name;
+  syncTransName();
+  $('setTransName').onchange = syncTransName;
   $('setStartPage').value = (s.ui && s.ui.start_page) || 'text';
   state.outDir = out.dir || b.output_dir || '';
   updateDirButtons();
@@ -1439,6 +1517,7 @@ async function saveSettings() {
     output: {
       dir: $('btnSetOutDir').textContent.trim(),
       suffix: $('setSuffix').value || '_译文',
+      translate_name: $('setTransName').checked,
       auto_save: $('optAutoSave').checked,
     },
     doc: { skip_header_footer: !$('optHeader').checked },

@@ -14,7 +14,8 @@ from .bus import bus
 from .i18n import tr
 from .ir import STATUS_EDITED, DocumentIR
 from .pipeline import (TransOptions, output_path_for, refine_segments,
-                       retranslate_segments, translate_document)
+                       retranslate_segments, translate_document,
+                       translate_filename)
 
 MAX_IRS = 5
 
@@ -183,8 +184,13 @@ class JobManager:
             job.message = msg or job.message
             bus.emit("progress", id=job.id, percent=round(pct * 100, 1), message=job.message)
 
+        stem = None
+        if settings.get("output.translate_name"):
+            stem, warn = translate_filename(Path(job.path).stem, opts)
+            if warn:
+                job.warnings = list(job.warnings or []) + [warn]
         out = output_path_for(job.path, settings.output_dir(),
-                              str(settings.get("output.suffix") or "_译文"))
+                              str(settings.get("output.suffix") or "_译文"), stem=stem)
         res = translate_document(job.path, opts, out, on_prog, self._cancel)
 
         job.segments = res.segments

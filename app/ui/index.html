@@ -184,7 +184,15 @@
               </div>
               <div class="row2">
                 <div class="field"><span>默认风格</span><select id="setStyle"></select></div>
-                <div class="field"><span>输出文件名后缀</span><input type="text" id="setSuffix" class="mono"></div>
+                <div class="field">
+                  <span>输出文件名后缀</span>
+                  <input type="text" id="setSuffix" class="mono">
+                  <label class="sub-check"><input type="checkbox" id="setTransName">翻译文件名</label>
+                </div>
+              </div>
+              <div class="field" id="transNameHint">
+                <span></span>
+                <small class="hint">勾选后输出文件直接使用译名，后缀选项失效；文件名中的非法字符会自动清理。</small>
               </div>
               <div class="field">
                 <span>输出目录</span>
@@ -283,6 +291,10 @@
   <div class="ov">
     <div class="ov-head">
       <div class="ov-title">预览调整<small id="pvName"></small></div>
+      <div class="seg" id="pvViewSeg" title="切换预览方式">
+        <button data-view="seg" class="active">逐段对照</button>
+        <button data-view="full">全文预览</button>
+      </div>
       <select id="pvMode">
         <option value="target_only">仅目标语言</option>
         <option value="bilingual">双语对照</option>

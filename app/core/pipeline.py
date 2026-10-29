@@ -1,6 +1,7 @@
 """翻译管线：解析 → 术语遮蔽 → 记忆命中 → 分批翻译 → 校验 → 写回。"""
 from __future__ import annotations
 
+import re
 import threading
 import time
 from dataclasses import dataclass, field
@@ -14,7 +15,7 @@ from ..parsers.registry import parser_for
 from .bus import bus
 from .i18n import tr
 from .ir import (STATUS_DONE, STATUS_FAILED, STATUS_OVERFLOW, STATUS_REFINED,
-                 STATUS_TERM, DocumentIR, Segment)
+                 STATUS_TERM, DocumentIR, Segment, is_translatable)
 from .terms import Glossary, build_glossary, termbook
 from .tm import make_key, tm
 
@@ -63,9 +64,48 @@ class FileResult:
     ir: DocumentIR | None = None
 
 
-def output_path_for(src: str, out_dir: str | Path, suffix: str) -> Path:
+def output_path_for(src: str, out_dir: str | Path, suffix: str,
+                    stem: str | None = None) -> Path:
+    """输出路径。stem 非空时（翻译文件名）直接以该名称命名，忽略后缀。"""
     p = Path(src)
-    return Path(out_dir) / f"{p.stem}{suffix}{p.suffix}"
+    name = (stem or "").strip() or f"{p.stem}{suffix}"
+    return Path(out_dir) / f"{name}{p.suffix}"
+
+
+_BAD_NAME_CHARS = re.compile(r'[\\/:*?"<>|\r\n\t]')
+
+
+def sanitize_filename(name: str, max_len: int = 80) -> str:
+    """清理为合法的 Windows 文件名。"""
+    s = _BAD_NAME_CHARS.sub(" ", name or "")
+    s = re.sub(r"\s+", " ", s).strip().strip(". ")
+    if len(s) > max_len:
+        s = s[:max_len].rstrip().rstrip(".")
+    return s
+
+
+def translate_filename(stem: str, opts: "TransOptions") -> tuple[str, str]:
+    """翻译文件名主干。返回 (译名, 警告)；失败时回退为清理后的原名。"""
+    raw = (stem or "").strip()
+    if not raw:
+        return "", ""
+    cleaned = sanitize_filename(raw)
+    if not cleaned or not is_translatable(cleaned):
+        return cleaned, ""
+    try:
+        translator = Translator(opts.engine if opts.engine in ("public", "llm") else None)
+        res = translator.translate([cleaned], opts.src, opts.tgt, opts.style)
+        out = (res.texts[0] if res.texts else "") or ""
+        out = sanitize_filename(out.strip())
+        if out and not is_cjk(opts.tgt) and out.islower():
+            # 英文译名常是全小写，文件名里改成词首字母大写更自然
+            out = " ".join(w[:1].upper() + w[1:] for w in out.split(" ") if w)
+        if not out or out == cleaned:
+            return cleaned, ""
+        return out, ""
+    except Exception:  # noqa: BLE001
+        return cleaned, tr("文件名翻译失败，已沿用原名",
+                           "Filename translation failed; original name kept")
 
 
 def summarize_ir(ir: DocumentIR) -> dict:
