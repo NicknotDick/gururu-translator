@@ -197,3 +197,11 @@ python -m PyInstaller build/app.spec --noconfirm --clean
 - **Visio 富文本**：同一形状内多段不同格式的文本会被合并为一段
 - **公共引擎**：免 Key 接口可能随时失效，接口地址与 client_key 已配置化，可在 `settings.json` 内热更新
 - **Markdown 链接**：为保证 URL 不被破坏，`[文字](链接)` 整段保持原文不译
+
+## 开源许可
+
+- 本仓库源码：**MIT License**（见 `LICENSE`），作者 Gururu Nick
+- 第三方组件许可与 AGPL 提示：见 **`NOTICES.md`**
+
+⚠️ 注意：Release 中的预编译 EXE 内嵌了 AGPL-3.0 的 PyMuPDF。个人自用不受约束，
+但对外分发该 EXE 时，AGPL 要求同时提供对应源码。详见 `NOTICES.md`。
