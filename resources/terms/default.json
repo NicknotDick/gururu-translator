@@ -1,0 +1,1392 @@
+{
+  "version": 1,
+  "note": "术语格式：s=源语言, t=目标语言, a=源词, b=译词。翻译方向与 s→t 一致时锁定 a→b，反向时自动锁定 b→a。",
+  "sets": [
+    {
+      "id": "it",
+      "name": "IT / 软件",
+      "terms": [
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "缓存",
+          "b": "cache"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "接口",
+          "b": "API"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "数据库",
+          "b": "database"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "线程",
+          "b": "thread"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "进程",
+          "b": "process"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "部署",
+          "b": "deployment"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "容器",
+          "b": "container"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "微服务",
+          "b": "microservice"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "负载均衡",
+          "b": "load balancing"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "中间件",
+          "b": "middleware"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "源代码",
+          "b": "source code"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "编译",
+          "b": "compile"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "调试",
+          "b": "debug"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "版本控制",
+          "b": "version control"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "仓库",
+          "b": "repository"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "分支",
+          "b": "branch"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "合并请求",
+          "b": "merge request"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "单元测试",
+          "b": "unit test"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "性能优化",
+          "b": "performance tuning"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "容器编排",
+          "b": "container orchestration"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "鉴权",
+          "b": "authentication"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "权限",
+          "b": "permission"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "日志",
+          "b": "log"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "监控告警",
+          "b": "monitoring and alerting"
+        }
+      ],
+      "name_en": "IT / Software"
+    },
+    {
+      "id": "medical",
+      "name": "医疗 / 生物",
+      "terms": [
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "患者",
+          "b": "patient"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "临床",
+          "b": "clinical"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "适应症",
+          "b": "indication"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "禁忌症",
+          "b": "contraindication"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "不良反应",
+          "b": "adverse reaction"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "剂量",
+          "b": "dosage"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "给药途径",
+          "b": "route of administration"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "疗程",
+          "b": "course of treatment"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "疗效",
+          "b": "efficacy"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "随机对照试验",
+          "b": "randomized controlled trial"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "双盲",
+          "b": "double-blind"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "安慰剂",
+          "b": "placebo"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "纳入标准",
+          "b": "inclusion criteria"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "排除标准",
+          "b": "exclusion criteria"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "随访",
+          "b": "follow-up"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "并发症",
+          "b": "complication"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "预后",
+          "b": "prognosis"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "发病率",
+          "b": "incidence"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "患病率",
+          "b": "prevalence"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "影像学检查",
+          "b": "imaging examination"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "血常规",
+          "b": "complete blood count"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "病历",
+          "b": "medical record"
+        }
+      ],
+      "name_en": "Medical / Bio"
+    },
+    {
+      "id": "legal",
+      "name": "法律 / 合同",
+      "terms": [
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "甲方",
+          "b": "Party A"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "乙方",
+          "b": "Party B"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "本合同",
+          "b": "this Contract"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "违约责任",
+          "b": "liability for breach of contract"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "不可抗力",
+          "b": "force majeure"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "知识产权",
+          "b": "intellectual property"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "保密义务",
+          "b": "confidentiality obligation"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "管辖",
+          "b": "jurisdiction"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "仲裁",
+          "b": "arbitration"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "诉讼",
+          "b": "litigation"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "损害赔偿",
+          "b": "damages"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "履约保证金",
+          "b": "performance bond"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "生效日期",
+          "b": "effective date"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "终止",
+          "b": "termination"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "解除",
+          "b": "rescission"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "补充协议",
+          "b": "supplementary agreement"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "附件",
+          "b": "Appendix"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "授权代表",
+          "b": "authorized representative"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "适用法律",
+          "b": "governing law"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "书面通知",
+          "b": "written notice"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "连带责任",
+          "b": "joint and several liability"
+        }
+      ],
+      "name_en": "Legal / Contracts"
+    },
+    {
+      "id": "mechanical",
+      "name": "机械 / 制造",
+      "terms": [
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "公差",
+          "b": "tolerance"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "装配",
+          "b": "assembly"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "轴承",
+          "b": "bearing"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "齿轮",
+          "b": "gear"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "液压",
+          "b": "hydraulic"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "气动",
+          "b": "pneumatic"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "传动轴",
+          "b": "drive shaft"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "联轴器",
+          "b": "coupling"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "密封圈",
+          "b": "sealing ring"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "螺栓",
+          "b": "bolt"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "扭矩",
+          "b": "torque"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "转速",
+          "b": "rotational speed"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "额定功率",
+          "b": "rated power"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "疲劳寿命",
+          "b": "fatigue life"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "表面粗糙度",
+          "b": "surface roughness"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "热处理",
+          "b": "heat treatment"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "淬火",
+          "b": "quenching"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "铸件",
+          "b": "casting"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "锻件",
+          "b": "forging"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "焊接",
+          "b": "welding"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "装配图",
+          "b": "assembly drawing"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "技术条件",
+          "b": "technical specification"
+        }
+      ],
+      "name_en": "Mechanical / Manufacturing"
+    },
+    {
+      "id": "finance",
+      "name": "金融 / 财务",
+      "terms": [
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "营业收入",
+          "b": "operating revenue"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "净利润",
+          "b": "net profit"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "毛利率",
+          "b": "gross margin"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "资产负债率",
+          "b": "debt-to-asset ratio"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "现金流",
+          "b": "cash flow"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "应收账款",
+          "b": "accounts receivable"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "存货",
+          "b": "inventory"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "折旧",
+          "b": "depreciation"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "摊销",
+          "b": "amortization"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "所有者权益",
+          "b": "owners' equity"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "审计",
+          "b": "audit"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "合并报表",
+          "b": "consolidated financial statements"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "关联方交易",
+          "b": "related party transaction"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "资本支出",
+          "b": "capital expenditure"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "市盈率",
+          "b": "price-to-earnings ratio"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "净资产收益率",
+          "b": "return on equity"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "流动性",
+          "b": "liquidity"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "计提减值",
+          "b": "provision for impairment"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "公允价值",
+          "b": "fair value"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "应计项目",
+          "b": "accruals"
+        }
+      ],
+      "name_en": "Finance / Accounting"
+    },
+    {
+      "id": "sap",
+      "name": "SAP 企业应用",
+      "terms": [
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "总账",
+          "b": "General Ledger"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "明细账",
+          "b": "Line Item"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "会计凭证",
+          "b": "Accounting Document"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "过账",
+          "b": "Posting"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "冲销",
+          "b": "Reversal"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "清账",
+          "b": "Clearing"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "科目余额",
+          "b": "Account Balance"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "折旧",
+          "b": "Depreciation"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "应付账款",
+          "b": "Accounts Payable"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "应收账款",
+          "b": "Accounts Receivable"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "银行对账",
+          "b": "Bank Reconciliation"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "会计年度",
+          "b": "Fiscal Year"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "会计期间",
+          "b": "Posting Period"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "凭证类型",
+          "b": "Document Type"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "记账码",
+          "b": "Posting Key"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "字段状态",
+          "b": "Field Status"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "平行分类账",
+          "b": "Parallel Ledger"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "税务发票",
+          "b": "Tax Invoice"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "预付款",
+          "b": "Down Payment"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "资产负债表",
+          "b": "Balance Sheet"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "利润表",
+          "b": "Profit and Loss Statement"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "试算平衡表",
+          "b": "Trial Balance"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "内部往来",
+          "b": "Intercompany Transaction"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "凭证分割",
+          "b": "Document Splitting"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "承诺项目",
+          "b": "Commitment Item"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "成本中心",
+          "b": "Cost Center"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "利润中心",
+          "b": "Profit Center"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "成本要素",
+          "b": "Cost Element"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "内部订单",
+          "b": "Internal Order"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "作业类型",
+          "b": "Activity Type"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "分摊",
+          "b": "Allocation"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "分配",
+          "b": "Distribution"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "标准成本",
+          "b": "Standard Cost"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "成本差异",
+          "b": "Cost Variance"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "结算",
+          "b": "Settlement"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "预算",
+          "b": "Budget"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "实际成本",
+          "b": "Actual Cost"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "成本动因",
+          "b": "Cost Driver"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "产品成本核算",
+          "b": "Product Costing"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "盈利能力分析",
+          "b": "Profitability Analysis"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "成本中心会计",
+          "b": "Cost Center Accounting"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "物料主数据",
+          "b": "Material Master"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "采购订单",
+          "b": "Purchase Order"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "采购申请",
+          "b": "Purchase Requisition"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "收货",
+          "b": "Goods Receipt"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "发货",
+          "b": "Goods Issue"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "发票校验",
+          "b": "Invoice Verification"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "库存管理",
+          "b": "Inventory Management"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "移动类型",
+          "b": "Movement Type"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "物料凭证",
+          "b": "Material Document"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "工厂",
+          "b": "Plant"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "库存地点",
+          "b": "Storage Location"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "批次",
+          "b": "Batch"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "供应商主数据",
+          "b": "Vendor Master"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "询价单",
+          "b": "Request for Quotation"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "报价",
+          "b": "Quotation"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "预留",
+          "b": "Reservation"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "盘点",
+          "b": "Physical Inventory"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "外部加工",
+          "b": "Subcontracting"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "库存调拨",
+          "b": "Stock Transfer"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "货源清单",
+          "b": "Source List"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "采购信息记录",
+          "b": "Purchasing Info Record"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "物料需求计划",
+          "b": "Material Requirements Planning"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "销售订单",
+          "b": "Sales Order"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "交货单",
+          "b": "Delivery Note"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "开票",
+          "b": "Billing"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "定价",
+          "b": "Pricing"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "客户主数据",
+          "b": "Customer Master"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "信用管理",
+          "b": "Credit Management"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "可用性检查",
+          "b": "Availability Check"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "销售组织",
+          "b": "Sales Organization"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "分销渠道",
+          "b": "Distribution Channel"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "产品层次",
+          "b": "Product Hierarchy"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "退货",
+          "b": "Returns"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "发运",
+          "b": "Shipping"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "物料清单",
+          "b": "Bill of Materials"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "工艺路线",
+          "b": "Routing"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "生产订单",
+          "b": "Production Order"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "工作中心",
+          "b": "Work Center"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "能力计划",
+          "b": "Capacity Planning"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "主生产计划",
+          "b": "Master Production Schedule"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "需求管理",
+          "b": "Demand Management"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "计划订单",
+          "b": "Planned Order"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "在制品",
+          "b": "Work in Process"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "反冲",
+          "b": "Backflush"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "生产版本",
+          "b": "Production Version"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "事务代码",
+          "b": "Transaction Code"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "后台配置",
+          "b": "Customizing"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "实施指南",
+          "b": "Implementation Guide"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "业务流程",
+          "b": "Business Process"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "主数据",
+          "b": "Master Data"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "组织架构",
+          "b": "Organizational Structure"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "权限角色",
+          "b": "Authorization Role"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "权限对象",
+          "b": "Authorization Object"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "用户出口",
+          "b": "User Exit"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "增强",
+          "b": "Enhancement"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "传输请求",
+          "b": "Transport Request"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "开发系统",
+          "b": "Development System"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "测试系统",
+          "b": "Quality System"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "生产系统",
+          "b": "Production System"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "抬头",
+          "b": "Header"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "行项目",
+          "b": "Line Item"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "编号范围",
+          "b": "Number Range"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "工作流",
+          "b": "Workflow"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "审批",
+          "b": "Approval"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "期末结账",
+          "b": "Period-End Closing"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "年结",
+          "b": "Year-End Closing"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "上线",
+          "b": "Go-Live"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "数据迁移",
+          "b": "Data Migration"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "蓝图设计",
+          "b": "Blueprint Design"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "用户验收测试",
+          "b": "User Acceptance Test"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "数据字典",
+          "b": "Data Dictionary"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "报表",
+          "b": "Report"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "业务蓝图",
+          "b": "Business Blueprint"
+        },
+        {
+          "s": "zh",
+          "t": "en",
+          "a": "关键用户",
+          "b": "Key User"
+        }
+      ],
+      "name_en": "SAP Enterprise"
+    }
+  ]
+}

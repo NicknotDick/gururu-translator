@@ -1,0 +1,232 @@
+[
+  {
+    "code": "zh",
+    "cn": "中文",
+    "en": "Chinese",
+    "cjk": true,
+    "rtl": false,
+    "tencent": "zh",
+    "mymemory": "zh-CN",
+    "native": "中文"
+  },
+  {
+    "code": "en",
+    "cn": "英语",
+    "en": "English",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "en",
+    "mymemory": "en-US",
+    "native": "English"
+  },
+  {
+    "code": "ja",
+    "cn": "日语",
+    "en": "Japanese",
+    "cjk": true,
+    "rtl": false,
+    "tencent": "jp",
+    "mymemory": "ja-JP",
+    "native": "日本語"
+  },
+  {
+    "code": "ko",
+    "cn": "韩语",
+    "en": "Korean",
+    "cjk": true,
+    "rtl": false,
+    "tencent": "kr",
+    "mymemory": "ko-KR",
+    "native": "한국어"
+  },
+  {
+    "code": "fr",
+    "cn": "法语",
+    "en": "French",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "fr",
+    "mymemory": "fr-FR",
+    "native": "Français"
+  },
+  {
+    "code": "de",
+    "cn": "德语",
+    "en": "German",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "de",
+    "mymemory": "de-DE",
+    "native": "Deutsch"
+  },
+  {
+    "code": "ru",
+    "cn": "俄语",
+    "en": "Russian",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "ru",
+    "mymemory": "ru-RU",
+    "native": "Русский"
+  },
+  {
+    "code": "es",
+    "cn": "西班牙语",
+    "en": "Spanish",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "es",
+    "mymemory": "es-ES",
+    "native": "Español"
+  },
+  {
+    "code": "pt",
+    "cn": "葡萄牙语",
+    "en": "Portuguese",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "pt",
+    "mymemory": "pt-PT",
+    "native": "Português"
+  },
+  {
+    "code": "it",
+    "cn": "意大利语",
+    "en": "Italian",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "it",
+    "mymemory": "it-IT",
+    "native": "Italiano"
+  },
+  {
+    "code": "ar",
+    "cn": "阿拉伯语",
+    "en": "Arabic",
+    "cjk": false,
+    "rtl": true,
+    "tencent": "ar",
+    "mymemory": "ar-SA",
+    "native": "العربية"
+  },
+  {
+    "code": "th",
+    "cn": "泰语",
+    "en": "Thai",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "th",
+    "mymemory": "th-TH",
+    "native": "ไทย"
+  },
+  {
+    "code": "vi",
+    "cn": "越南语",
+    "en": "Vietnamese",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "vi",
+    "mymemory": "vi-VN",
+    "native": "Tiếng Việt"
+  },
+  {
+    "code": "id",
+    "cn": "印尼语",
+    "en": "Indonesian",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "id",
+    "mymemory": "id-ID",
+    "native": "Bahasa Indonesia"
+  },
+  {
+    "code": "ms",
+    "cn": "马来语",
+    "en": "Malay",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "ms",
+    "mymemory": "ms-MY",
+    "native": "Bahasa Melayu"
+  },
+  {
+    "code": "tr",
+    "cn": "土耳其语",
+    "en": "Turkish",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "tr",
+    "mymemory": "tr-TR",
+    "native": "Türkçe"
+  },
+  {
+    "code": "nl",
+    "cn": "荷兰语",
+    "en": "Dutch",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "nl",
+    "mymemory": "nl-NL",
+    "native": "Nederlands"
+  },
+  {
+    "code": "pl",
+    "cn": "波兰语",
+    "en": "Polish",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "pl",
+    "mymemory": "pl-PL",
+    "native": "Polski"
+  },
+  {
+    "code": "hi",
+    "cn": "印地语",
+    "en": "Hindi",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "hi",
+    "mymemory": "hi-IN",
+    "native": "हिन्दी"
+  },
+  {
+    "code": "uk",
+    "cn": "乌克兰语",
+    "en": "Ukrainian",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "uk",
+    "mymemory": "uk-UA",
+    "native": "Українська"
+  },
+  {
+    "code": "sv",
+    "cn": "瑞典语",
+    "en": "Swedish",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "sv",
+    "mymemory": "sv-SE",
+    "native": "Svenska"
+  },
+  {
+    "code": "he",
+    "cn": "希伯来语",
+    "en": "Hebrew",
+    "cjk": false,
+    "rtl": true,
+    "tencent": "he",
+    "mymemory": "he-IL",
+    "native": "עברית"
+  },
+  {
+    "code": "el",
+    "cn": "希腊语",
+    "en": "Greek",
+    "cjk": false,
+    "rtl": false,
+    "tencent": "el",
+    "mymemory": "el-GR",
+    "native": "Ελληνικά"
+  }
+]

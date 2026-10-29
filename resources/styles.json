@@ -1,0 +1,44 @@
+[
+  {
+    "id": "general",
+    "name": "标准通用",
+    "desc": "忠实、通顺、中性，适用于大多数场景",
+    "prompt": "Use clear, faithful, neutral modern prose. Preserve the original meaning precisely without adding or omitting information.",
+    "name_en": "General"
+  },
+  {
+    "id": "formal",
+    "name": "正式公文",
+    "desc": "严谨书面语，适合合同、通知、公文",
+    "prompt": "Use formal written register suitable for official documents and contracts. Prefer precise legal-administrative wording, avoid contractions and colloquialisms, keep modal verbs exact (shall/may/must).",
+    "name_en": "Formal"
+  },
+  {
+    "id": "academic",
+    "name": "学术论文",
+    "desc": "客观、术语密集、句式规整",
+    "prompt": "Use academic register. Prefer impersonal, objective constructions and discipline-standard terminology. Keep hedging expressions (may suggest, indicates) intact and preserve citation markers verbatim.",
+    "name_en": "Academic"
+  },
+  {
+    "id": "technical",
+    "name": "技术文档",
+    "desc": "简洁准确，保留命令、参数与代码",
+    "prompt": "Use concise technical documentation style. Keep all identifiers, CLI flags, file paths, API names, version numbers and code fragments unchanged. Prefer imperative mood for procedures.",
+    "name_en": "Technical"
+  },
+  {
+    "id": "business",
+    "name": "商务沟通",
+    "desc": "礼貌、简洁、有行动导向",
+    "prompt": "Use professional business communication register: polite, concise, action-oriented. Keep greetings and closings natural in the target culture.",
+    "name_en": "Business"
+  },
+  {
+    "id": "casual",
+    "name": "口语自然",
+    "desc": "轻松自然，像母语者日常表达",
+    "prompt": "Use natural conversational register as a native speaker would speak. Prioritize fluency and idiom over literal correspondence, but never change facts, numbers or names.",
+    "name_en": "Casual"
+  }
+]

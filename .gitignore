@@ -1,0 +1,27 @@
+# 构建产物
+dist/
+build/
+*.spec.bak
+
+# 运行时数据（绿色版约定：配置/缓存/日志不入库）
+data/
+output/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 工具与会话数据
+.workbuddy/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# 手册：保留 docx、校对 pdf 与插图源 manual/shots/（重建手册需要）
+# 仅忽略根目录的临时校对截图
+manual/*.png

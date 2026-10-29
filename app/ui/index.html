@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gururu 翻译</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body class="booting">
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="brand-name" id="brandName">Gururu 翻译</div>
+    </div>
+    <nav class="nav">
+      <button class="nav-item" data-page="dict"><span class="ico">词</span>查词</button>
+      <button class="nav-item active" data-page="text"><span class="ico">文</span>文本翻译</button>
+      <button class="nav-item" data-page="docs"><span class="ico">档</span>文档翻译</button>
+      <button class="nav-item" data-page="settings"><span class="ico">⚙</span>设置</button>
+    </nav>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div class="langs">
+        <select id="srcLang" title="源语言"></select>
+        <button class="swap" id="swapBtn" title="交换语言">⇄</button>
+        <select id="tgtLang" title="目标语言"></select>
+      </div>
+      <div class="top-actions">
+        <span class="hint" id="topHint"></span>
+      </div>
+    </header>
+
+    <!-- ============ 文本翻译 ============ -->
+    <section class="page active" id="page-text">
+      <div class="split">
+        <div class="pane">
+          <div class="pane-head"><span>原文</span><span id="srcMeta">0 字</span></div>
+          <textarea id="srcText" spellcheck="false" placeholder="在此粘贴或输入要翻译的内容，Ctrl+Enter 立即翻译…"></textarea>
+          <div class="pane-foot"><span id="srcLines">0 行</span><span>术语命中会自动锁定</span></div>
+        </div>
+        <div class="pane">
+          <div class="pane-head"><span>译文</span><span id="tgtMeta">0 字</span></div>
+          <textarea id="tgtText" spellcheck="false" placeholder="译文显示在这里，可直接修改后复制"></textarea>
+          <div class="pane-foot"><span id="tgtLines">0 行</span><span id="tgtEngine"></span></div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <label>引擎
+          <select id="textEngine">
+            <option value="public">公共引擎（免 Key）</option>
+            <option value="llm">大语言模型</option>
+          </select>
+        </label>
+        <label>风格 <select id="textStyle"></select></label>
+        <div class="termsel" id="textTermsWrap">
+          <button id="textTermsBtn">术语库：未启用</button>
+          <div class="ts-pop" id="textTermsPop"></div>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn" id="btnClear">清空</button>
+        <button class="btn" id="btnCopy">复制译文</button>
+        <button class="btn primary" id="btnTranslate">翻译</button>
+      </div>
+    </section>
+
+    <!-- ============ 文档翻译 ============ -->
+    <section class="page" id="page-docs">
+      <div class="doc-layout">
+        <div class="card" style="display:flex;flex-direction:column;min-height:0">
+          <div class="card-head">翻译选项</div>
+          <div class="card-body" style="overflow:auto">
+            <div class="field">
+              <span>引擎</span>
+              <select id="docEngine">
+                <option value="public">公共引擎（免 Key）</option>
+                <option value="llm">大语言模型</option>
+              </select>
+            </div>
+            <div class="field">
+              <span>翻译模式</span>
+              <div class="radio-row">
+                <label><input type="radio" name="docMode" value="target_only" checked>仅目标语言</label>
+                <label><input type="radio" name="docMode" value="bilingual">双语对照</label>
+              </div>
+            </div>
+            <div class="field"><span>风格</span><select id="docStyle"></select></div>
+            <div class="field">
+              <span>术语库</span>
+              <div class="termsel" id="docTermsWrap" style="width:100%">
+                <button id="docTermsBtn" style="width:100%;max-width:none">未启用</button>
+                <div class="ts-pop" id="docTermsPop"></div>
+              </div>
+            </div>
+            <div class="field">
+              <span>其他</span>
+              <div class="check-row">
+                <label><input type="checkbox" id="optHeader">同时翻译页眉页脚</label>
+                <label><input type="checkbox" id="optAutoSave" checked>完成后自动输出译文</label>
+              </div>
+            </div>
+            <div class="field">
+              <span>输出目录</span>
+              <div class="dirrow">
+                <button class="btn dirpath" id="btnOutDir" title="在资源管理器中打开该目录">—</button>
+                <button class="btn dirpick" id="btnOutDirPick" title="更改输出目录">…</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="doc-main">
+          <div class="dropzone" id="dropzone">
+            <b>点击选择文件</b> 或 选择整个文件夹
+            <small>支持 Word · Excel · PPT · PDF · Visio · Markdown · TXT · EPUB</small>
+          </div>
+          <div class="queue" id="queue"><div class="queue-empty">队列为空，先添加文件</div></div>
+          <div class="doc-actions">
+            <button class="btn primary" id="btnStart">开始翻译</button>
+            <button class="btn" id="btnCancel">取消</button>
+            <button class="btn" id="btnAddFolder">添加文件夹</button>
+            <button class="btn" id="btnClearDone">清理已完成</button>
+            <span class="outdir" id="outDirLabel"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 查词 ============ -->
+    <section class="page" id="page-dict">
+      <div class="dict-wrap">
+        <div class="dict-bar">
+          <div class="dict-input-wrap">
+            <input type="text" id="dictInput" class="mono" autocomplete="off"
+                   placeholder="输入英文单词或短语，输入时给出最接近的单词">
+            <div class="dict-sug hidden" id="dictSug"></div>
+          </div>
+          <button class="btn primary" id="btnLookup">查询</button>
+          <span class="dict-tip" id="dictTip"></span>
+        </div>
+        <div class="dict-body" id="dictBody">
+          <div class="dict-empty">输入单词即可查词：离线使用内置词典，联网时同时获取有道与英文释义</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 设置 ============ -->
+    <section class="page" id="page-settings">
+      <div class="settings">
+        <div class="set-grid">
+          <div class="set-sec">
+            <h3>常规</h3>
+            <div class="card-body">
+              <div class="field">
+                <span>色调</span>
+                <div class="seg" id="themeSeg">
+                  <button data-theme="auto">跟随系统</button>
+                  <button data-theme="light">浅色</button>
+                  <button data-theme="dark">深色</button>
+                </div>
+              </div>
+              <div class="field">
+                <span>界面语言</span>
+                <div class="seg" id="langSeg">
+                  <button data-lang="zh">中文</button>
+                  <button data-lang="en">English</button>
+                </div>
+              </div>
+              <div class="field">
+                <span>启动页</span>
+                <select id="setStartPage">
+                  <option value="text">文本翻译</option>
+                  <option value="dict">查词</option>
+                  <option value="docs">文档翻译</option>
+                </select>
+              </div>
+              <div class="field">
+                <span>默认引擎</span>
+                <div class="radio-row">
+                  <label><input type="radio" name="setEngine" value="public">公共引擎</label>
+                  <label><input type="radio" name="setEngine" value="llm">大语言模型</label>
+                </div>
+              </div>
+              <div class="row2">
+                <div class="field"><span>默认风格</span><select id="setStyle"></select></div>
+                <div class="field"><span>输出文件名后缀</span><input type="text" id="setSuffix" class="mono"></div>
+              </div>
+              <div class="field">
+                <span>输出目录</span>
+                <div class="dirrow">
+                  <button class="btn dirpath" id="btnSetOutDir" title="在资源管理器中打开该目录">—</button>
+                  <button class="btn dirpick" id="btnSetOutDirPick" title="更改输出目录">…</button>
+                </div>
+              </div>
+              <div class="check-row">
+                <label><input type="checkbox" id="setTm">启用翻译记忆缓存</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="set-sec">
+            <h3>大语言模型（可选）</h3>
+            <div class="card-body">
+              <div class="field"><span>服务商模板</span><select id="setProvider"></select></div>
+              <div class="field"><span>接口地址</span><input type="text" id="setBaseUrl" class="mono" placeholder="https://api.deepseek.com"></div>
+              <div class="row2">
+                <div class="field"><span>模型</span><input type="text" id="setModel" class="mono"></div>
+                <div class="field"><span>温度</span><input type="text" id="setTemp" class="mono" value="0.2"></div>
+              </div>
+              <div class="field">
+                <span>API Key（本机加密存储，不回传明文）</span>
+                <div class="row2">
+                  <input type="password" id="setApiKey" class="mono" placeholder="sk-…">
+                  <button class="btn" id="btnTest">测试连接</button>
+                </div>
+              </div>
+              <div class="msg" id="testMsg"></div>
+              <div class="row2">
+                <div class="field"><span>并发数</span><input type="text" id="setConc" class="mono"></div>
+                <div class="field"><span>单批字符上限</span><input type="text" id="setBatch" class="mono"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="set-sec">
+            <h3>术语库</h3>
+            <div class="card-body">
+              <div class="row2">
+                <select id="setTermSet"></select>
+                <button class="btn" id="btnNewSet">新建</button>
+              </div>
+              <div class="row2">
+                <button class="btn" id="btnImportTerms">导入 CSV / Excel</button>
+                <button class="btn danger" id="btnDelSet">删除当前库</button>
+              </div>
+              <div class="row2">
+                <input type="text" id="newTermSrc" placeholder="源词">
+                <input type="text" id="newTermTgt" placeholder="译词">
+              </div>
+              <button class="btn wide" id="btnAddTerm">添加术语</button>
+              <div class="term-list" id="termList"></div>
+            </div>
+          </div>
+
+          <div class="set-sec">
+            <h3>缓存与运行</h3>
+            <div class="card-body">
+              <div class="kv"><span>记忆条目</span><b id="tmEntries">0</b></div>
+              <div class="kv"><span>本次命中率</span><b id="tmRate">—</b></div>
+              <div class="kv"><span>版本</span><b id="appVer" class="mono" style="font-size:11px">—</b></div>
+              <div class="kv"><span>构建时间</span><b id="appBuild" class="mono" style="font-size:11px">—</b></div>
+              <div class="kv"><span>数据目录</span><b class="mono" id="dataDir" style="font-size:11px">—</b></div>
+              <button class="btn wide" id="btnShortcut">创建桌面快捷方式</button>
+              <button class="btn wide" id="btnOpenData">打开数据目录</button>
+              <button class="btn wide danger" id="btnClearTm">清空翻译记忆</button>
+            </div>
+          </div>
+        </div>
+        <div class="set-foot">
+          <button class="btn primary" id="btnSaveSettings">保存设置</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ 状态栏（关于在右下角） ============ -->
+  <footer class="statusbar">
+    <div class="sb-left">
+      <span class="engine-chip" id="engineChip">引擎：<b>公共（免 Key）</b></span>
+      <span class="tm-info" id="tmInfo">翻译记忆加载中…</span>
+    </div>
+    <button class="sb-about" id="cornerAbout" title="关于">
+      <span class="sb-line">
+        <span class="sb-author">Gururu Nick</span>
+      </span>
+    </button>
+  </footer>
+</div>
+
+<!-- ============ 预览调整 ============ -->
+<div class="overlay hidden" id="preview">
+  <div class="ov">
+    <div class="ov-head">
+      <div class="ov-title">预览调整<small id="pvName"></small></div>
+      <select id="pvMode">
+        <option value="target_only">仅目标语言</option>
+        <option value="bilingual">双语对照</option>
+      </select>
+      <select id="pvEngine" title="重译所用引擎">
+        <option value="public">公共引擎</option>
+        <option value="llm">AI 模型</option>
+      </select>
+      <select id="pvStyle"></select>
+      <div class="termsel" id="pvTermsWrap">
+        <button id="pvTermsBtn">术语库</button>
+        <div class="ts-pop" id="pvTermsPop"></div>
+      </div>
+      <button class="btn" id="btnPvRetrans">全部重译</button>
+      <div class="spacer"></div>
+      <button class="btn" id="btnPvClose">关闭</button>
+      <button class="btn primary" id="btnPvSave">保存输出</button>
+    </div>
+    <div class="ov-stat" id="pvStat"></div>
+    <div class="ov-body" id="pvBody"></div>
+    <div class="ov-ai">
+      <div class="ov-ai-hint" id="pvSelInfo">点击左侧原文可选中段落，未选中时作用于全部</div>
+      <div class="ov-ai-row">
+        <input type="text" id="pvInstr" class="mono"
+               placeholder="告诉 AI 怎么改，例如：更正式 / 更简洁 / 保留被动语态 / 统一术语为 API">
+        <button class="btn accent" id="btnPvAi">AI 调整</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 关于 ============ -->
+<div class="overlay hidden" id="about">
+  <div class="about">
+    <div class="about-top">
+      <div class="about-logo"><i class="lg-l">文</i><i class="lg-r">A</i></div>
+      <div>
+        <h2 id="abName">Gururu 翻译</h2>
+        <p class="about-sub" id="abAuthor">作者：Gururu Nick</p>
+        <p class="about-sign">一切很美 只因有你</p>
+      </div>
+    </div>
+    <div class="about-body">
+      <div class="kv"><span>版本</span><b id="abVer" class="mono">—</b></div>
+      <div class="kv"><span>构建时间</span><b id="abBuild" class="mono">—</b></div>
+      <div class="kv"><span>运行环境</span><b id="abEnv" class="mono" style="font-size:11px">—</b></div>
+      <div class="kv"><span>数据目录</span><b id="abData" class="mono" style="font-size:11px">—</b></div>
+      <div class="about-formats"><span>支持格式</span><div id="abFormats"></div></div>
+    </div>
+    <div class="about-foot">
+      <button class="btn" id="btnAbData">打开数据目录</button>
+      <button class="btn primary" id="btnAbClose">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
