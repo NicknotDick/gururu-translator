@@ -25,3 +25,7 @@ Thumbs.db
 # 手册：保留 docx、校对 pdf 与插图源 manual/shots/（重建手册需要）
 # 仅忽略根目录的临时校对截图
 manual/*.png
+
+# 出厂配置：由 tools/make_factory_settings.py 从本机配置生成，含本机加密的 API Key，不入库
+resources/default_settings.json
+出厂配置.json

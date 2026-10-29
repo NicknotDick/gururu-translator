@@ -100,6 +100,18 @@ const EN = {
   '构建时间': 'Built',
   '打开数据目录': 'Open data folder',
   '创建桌面快捷方式': 'Create desktop shortcut',
+  '导出配置': 'Export config',
+  '导入配置': 'Import config',
+  '固化为出厂默认': 'Save as factory defaults',
+  '已固化为出厂默认：': 'Saved as factory defaults: ',
+  '固化失败：程序目录不可写': 'Failed: program folder is read-only',
+  '配置文件': 'Config file',
+  '配置已导出：': 'Config exported: ',
+  '配置已导入': 'Configuration imported',
+  '导出失败': 'Export failed',
+  '导入失败': 'Import failed',
+  '（内嵌出厂配置）': ' (embedded defaults)',
+  '（便携降级模式）': ' (fallback mode)',
   '清空翻译记忆': 'Clear TM',
   '保存设置': 'Save settings',
   '预览调整': 'Review',
@@ -292,6 +304,16 @@ async function boot() {
     if (b.data_fallback) {
       $('dataDir').textContent += (L('（程序目录不可写，已自动转存到此处）', ' (program folder is read-only; data saved here instead)'));
     }
+    // 配置文件实际位置 + 是否内嵌了出厂配置
+    api('settings_path').then((r) => {
+      const el = $('cfgFile');
+      if (!el || !r || !r.ok) return;
+      const p = r.path || '';
+      el.textContent = p ? (p.length > 36 ? '…' + p.slice(-34) : p) : '—';
+      el.title = p;
+      if (r.factory) el.textContent += L('（内嵌出厂配置）', ' (embedded defaults)');
+      else if (!r.portable) el.textContent += L('（便携降级模式）', ' (fallback mode)');
+    });
     state.outDir = b.output_dir || '';
     applyLang((((s.ui || {}).lang) || 'zh'), false);
     refreshTm(b.tm);
@@ -398,6 +420,28 @@ function bindEvents() {
   $('outDirLabel').onclick = openOutDir;
   $('cornerAbout').onclick = openAbout;
   $('btnOpenData').onclick = () => api('open_path', (state.boot || {}).data_dir || '');
+  $('cfgFileRow').onclick = () => api('open_path', (state.boot || {}).data_dir || '');
+  $('btnExportSettings').onclick = async () => {
+    const r = await api('export_settings');
+    if (!r || r.cancelled) return;
+    if (!r.ok) { toast(r.error || L('导出失败', 'Export failed'), 'err'); return; }
+    toast(L('配置已导出：', 'Config exported: ') + r.path, 'ok');
+  };
+  $('btnImportSettings').onclick = async () => {
+    const r = await api('import_settings');
+    if (!r || r.cancelled) return;
+    if (!r.ok) { toast(r.error || L('导入失败', 'Import failed'), 'err'); return; }
+    loadSettingsForm({ settings: r.settings, ...(state.boot || {}) });
+    toast(L('配置已导入', 'Configuration imported'), 'ok');
+  };
+  $('btnFreezeSettings').onclick = async () => {
+    const r = await api('freeze_settings');
+    if (!r || !r.ok) {
+      toast(r.error || L('固化失败：程序目录不可写', 'Failed: program folder is read-only'), 'err');
+      return;
+    }
+    toast(L('已固化为出厂默认：', 'Saved as factory defaults: ') + r.path, 'ok');
+  };
   $('btnShortcut').onclick = async () => {
     const r = await api('create_desktop_shortcut');
     if (!r.ok) { toast(r.error || L('创建失败', 'Failed'), 'err'); return; }

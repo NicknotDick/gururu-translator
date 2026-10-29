@@ -94,6 +94,15 @@ def logs_dir() -> Path:
     return d
 
 
+def portable_config_path() -> Path:
+    """便携出厂配置：位于程序目录，随整个软件文件夹迁移。
+
+    EXE 在运行时无法改写自身，因此「把配置固化进软件」以这个与软件同级的
+    文件实现——拷贝软件文件夹即带走配置，首次在新机器运行时自动生效。
+    """
+    return app_dir() / "出厂配置.json"
+
+
 def default_output_dir() -> Path:
     d = writable_root() / "output"
     d.mkdir(parents=True, exist_ok=True)

@@ -27,6 +27,10 @@ def main() -> int:
 
     run(PY, "tools/stamp_version.py")
     run(PY, "tools/make_assets.py")
+    # 出厂配置：把当前设置固化进 EXE，新机器首次打开即为配置好的状态
+    if (ROOT / "resources" / "default_settings.json").exists() or \
+            (ROOT / "data" / "settings.json").exists():
+        run(PY, "tools/make_factory_settings.py")
     run(PY, "tools/embed_ui.py")
     run(PY, "-m", "PyInstaller", "build/app.spec", "--noconfirm", "--clean",
         "--distpath", "dist", "--workpath", "build/work")

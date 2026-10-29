@@ -119,6 +119,57 @@ class Bridge:
             return {"ok": True, "dir": paths[0]}
         return {"ok": False, "dir": str(settings.output_dir())}
 
+    # ---------- 配置迁移 ----------
+    def settings_path(self) -> dict:
+        """当前配置文件实际位置，以及是否内嵌了出厂配置。"""
+        try:
+            return {
+                "ok": True,
+                "path": str(settings.path),
+                "factory": settings.has_factory(),
+                "portable": not paths_using_fallback(),
+            }
+        except Exception:
+            return {"ok": False, "path": "", "factory": False, "portable": True}
+
+    def freeze_settings(self) -> dict:
+        """把当前配置固化到软件目录（含本机加密的 API Key），随文件夹迁移。"""
+        try:
+            p = settings.freeze()
+            return {"ok": True, "path": str(p)}
+        except Exception as exc:  # noqa: BLE001
+            bus.log(f"固化配置失败：{exc}", "error")
+            return {"ok": False, "error": str(exc)}
+
+    def export_settings(self) -> dict:
+        """导出当前配置为随身 JSON。"""
+        res = self._dialog("save", multiple=False,
+                           file_types=("配置文件 (*.json)", "所有文件 (*.*)"))
+        paths = list(res or [])
+        if not paths:
+            return {"ok": False, "cancelled": True}
+        try:
+            target = paths[0]
+            p = settings.export_to(target)
+            return {"ok": True, "path": str(p)}
+        except Exception as exc:  # noqa: BLE001
+            bus.log(f"导出配置失败：{exc}", "error")
+            return {"ok": False, "error": str(exc)}
+
+    def import_settings(self) -> dict:
+        """从 JSON 导入配置。"""
+        res = self._dialog("open", multiple=False,
+                           file_types=("配置文件 (*.json)", "所有文件 (*.*)"))
+        paths = list(res or [])
+        if not paths:
+            return {"ok": False, "cancelled": True}
+        try:
+            data = settings.import_from(paths[0])
+            return {"ok": True, "settings": data}
+        except Exception as exc:  # noqa: BLE001
+            bus.log(f"导入配置失败：{exc}", "error")
+            return {"ok": False, "error": str(exc)}
+
     def open_path(self, path: str) -> dict:
         if path and os.path.exists(path):
             open_in_explorer(path)
