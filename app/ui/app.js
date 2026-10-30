@@ -41,9 +41,11 @@ const EN = {
   '完成后自动输出译文': 'Auto-save output',
   '输出目录': 'Output folder',
   '点击选择文件': 'Click to choose',
-  '或 选择整个文件夹': 'or add a folder',
-  '支持 Word · Excel · PPT · PDF · Visio · Markdown · TXT · EPUB':
-    'Word · Excel · PPT · PDF · Visio · Markdown · TXT · EPUB',
+  '或 把文件拖到这里': 'or drag files here',
+  '支持 Word · Excel · PPT · PDF · Visio · Markdown · TXT · EPUB，也可直接拖入整个文件夹':
+    'Word · Excel · PPT · PDF · Visio · Markdown · TXT · EPUB — folders can be dropped too',
+  '松开即可加入队列': 'Release to add to the queue',
+  '支持文档与文件夹，不受支持的文件会自动跳过': 'Documents and folders; unsupported files are skipped',
   '队列为空，先添加文件': 'Queue is empty — add files first',
   '开始翻译': 'Start',
   '取消': 'Cancel',
@@ -326,6 +328,7 @@ async function boot() {
     updateTermButtons();
     loadSettingsForm(b);
     bindEvents();
+    initDnd();
     pollLoop();
     const startPage = ((s.ui || {}).start_page) || 'text';
     if (startPage !== 'text') switchPage(startPage);
@@ -533,6 +536,51 @@ function switchPage(name) {
   document.querySelectorAll('.page').forEach((p) => p.classList.toggle('active', p.id === 'page-' + name));
   if (name === 'settings') { loadSettingsForm(state.boot); loadTermOptions(); }
   if (name === 'dict') { const el = $('dictInput'); if (el) el.focus(); }
+}
+
+/* ---------------- 拖放文件 ----------------
+   页面 JS 拿不到拖入文件的绝对路径，这里只负责高亮与阻止默认行为；
+   真正的入队由 Python 侧的 document drop 监听完成（见 app/core/dnd.py）。 */
+let dndDepth = 0;
+
+function dndHasFiles(e) {
+  const dt = e && e.dataTransfer;
+  if (!dt) return false;
+  const types = dt.types ? Array.prototype.slice.call(dt.types) : [];
+  return types.indexOf('Files') >= 0;
+}
+
+function setDnd(on) {
+  const dz = $('dropzone');
+  if (dz) dz.classList.toggle('drag', !!on);
+  const mask = $('dndMask');
+  if (mask) mask.classList.toggle('show', !!on);
+}
+
+function initDnd() {
+  document.addEventListener('dragenter', (e) => {
+    if (!dndHasFiles(e)) return;
+    e.preventDefault();
+    dndDepth += 1;
+    setDnd(true);
+  });
+  document.addEventListener('dragover', (e) => {
+    if (!dndHasFiles(e)) return;
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+    setDnd(true);
+  });
+  document.addEventListener('dragleave', (e) => {
+    if (!dndHasFiles(e)) return;
+    dndDepth = Math.max(0, dndDepth - 1);
+    if (!dndDepth) setDnd(false);
+  });
+  document.addEventListener('drop', (e) => {
+    if (!dndHasFiles(e)) return;
+    e.preventDefault();
+    dndDepth = 0;
+    setDnd(false);
+  });
 }
 
 /* ---------------- 术语库多选 ---------------- */
@@ -819,6 +867,21 @@ function pollLoop() {
           if (e.type === 'job_done' && state.jobs.get(e.id)) { /* noop */ }
         } else if (e.type === 'queue') {
           if (e.jobs) { syncJobs(e.jobs); }
+          dirty = false;
+        } else if (e.type === 'dropped') {
+          if (e.jobs && e.jobs.length) syncJobs(e.jobs);
+          switchPage('docs');
+          if (e.failed) {
+            toast(L('未能读取拖入文件的路径，请改用「点击选择文件」',
+                    'Cannot read the dropped file path — please use "Click to choose"'), 'err');
+          } else if (e.added) {
+            toast(L('已加入队列 ' + e.added + ' 个文件', `Added ${e.added} file(s)`), 'ok');
+          } else {
+            toast(L('拖入的内容没有受支持的文档', 'No supported documents were dropped'), 'err');
+          }
+          if (!e.failed && e.skipped && e.skipped.length) {
+            toast(L('已跳过：', 'Skipped: ') + e.skipped.slice(0, 3).join(L('、', ', ')), 'err');
+          }
           dirty = false;
         } else if (e.type === 'log' && e.level === 'error') {
           toast(e.msg, 'err');

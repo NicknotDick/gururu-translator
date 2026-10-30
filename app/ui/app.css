@@ -244,6 +244,26 @@ button.danger:hover { border-color: var(--err); }
   background: var(--panel); transition: .15s;
 }
 .dropzone:hover { border-color: var(--accent); color: var(--fg2); background: var(--panel2); }
+.dropzone.drag {
+  border-color: var(--accent); color: var(--accent-soft-fg);
+  background: var(--accent-soft); box-shadow: inset 0 0 0 3px var(--accent-soft-hover);
+}
+.dropzone.drag b { color: var(--accent-soft-fg); }
+
+/* 拖放提示层：pointer-events:none 保证不影响 drop 事件命中 */
+.dnd-mask {
+  position: fixed; inset: 0; z-index: 90; display: none;
+  align-items: center; justify-content: center; pointer-events: none;
+  background: var(--overlay); backdrop-filter: blur(1px);
+}
+.dnd-mask.show { display: flex; }
+.dnd-card {
+  border: 2px dashed var(--accent); border-radius: 14px;
+  padding: 26px 40px; text-align: center; background: var(--panel);
+  box-shadow: var(--shadow);
+}
+.dnd-card b { display: block; font-size: 15px; color: var(--fg); }
+.dnd-card small { display: block; margin-top: 6px; font-size: 11px; color: var(--fg3); }
 .dropzone b { color: var(--fg2); font-weight: 600; }
 .dropzone small { display: block; margin-top: 5px; font-size: 11px; color: var(--fg3); }
 

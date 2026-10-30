@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import sys
 import threading
@@ -23,6 +24,7 @@ from ..version import APP_NAME, AUTHOR, version, version_parts
 
 APP_TITLE = APP_NAME
 APP_VERSION = version()
+_LOG = logging.getLogger("bridge")
 
 
 class Bridge:
@@ -232,6 +234,19 @@ class Bridge:
         if not path:
             return {"ok": False, "error": ""}
         added, skipped = manager.add_paths([path], recursive=True)
+        return {"ok": True, "added": added, "skipped": skipped,
+                "jobs": [j.to_dict() for j in manager.list()]}
+
+    def add_dropped(self, paths: list[str] | None = None) -> dict:
+        """拖放入口：按完整路径入队，不经文件对话框（拖入文件夹时递归展开）。"""
+        paths = [str(p) for p in (paths or []) if p]
+        if not paths:
+            return {"ok": False, "added": 0, "skipped": [],
+                    "jobs": [j.to_dict() for j in manager.list()]}
+        added, skipped = manager.add_paths(paths, recursive=True)
+        _LOG.info("拖放入队：%d 个，跳过 %d 个（%s）", added, len(skipped), list(skipped)[:3])
+        bus.emit("dropped", added=added, skipped=list(skipped)[:5],
+                 jobs=[j.to_dict() for j in manager.list()])
         return {"ok": True, "added": added, "skipped": skipped,
                 "jobs": [j.to_dict() for j in manager.list()]}
 

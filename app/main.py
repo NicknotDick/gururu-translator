@@ -352,6 +352,25 @@ def main() -> int:
     )
     bridge.bind(window)
 
+    def _bind_dnd() -> None:
+        """页面就绪后再注册拖放监听，避免在 loaded 回调里同步执行 JS。"""
+
+        def _worker() -> None:
+            import time
+
+            time.sleep(0.4)
+            try:
+                from app.core.dnd import install as install_dnd
+
+                ok = install_dnd(window, lambda paths: bridge.add_dropped(paths))
+                log.info("拖放支持：%s", "已启用" if ok else "不可用")
+            except Exception:  # noqa: BLE001
+                log.warning("拖放支持未启用", exc_info=True)
+
+        threading.Thread(target=_worker, daemon=True).start()
+
+    window.events.loaded += _bind_dnd
+
     tray = start_tray(window)
     if tray is not None:
         def _on_minimized(*_a) -> None:

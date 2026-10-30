@@ -114,8 +114,8 @@
 
         <div class="doc-main">
           <div class="dropzone" id="dropzone">
-            <b>点击选择文件</b> 或 选择整个文件夹
-            <small>支持 Word · Excel · PPT · PDF · Visio · Markdown · TXT · EPUB</small>
+            <b>点击选择文件</b> 或 把文件拖到这里
+            <small>支持 Word · Excel · PPT · PDF · Visio · Markdown · TXT · EPUB，也可直接拖入整个文件夹</small>
           </div>
           <div class="queue" id="queue"><div class="queue-empty">队列为空，先添加文件</div></div>
           <div class="doc-actions">
@@ -411,6 +411,13 @@
       <button class="btn" id="btnAbData">打开数据目录</button>
       <button class="btn primary" id="btnAbClose">关闭</button>
     </div>
+  </div>
+</div>
+
+<div class="dnd-mask" id="dndMask">
+  <div class="dnd-card">
+    <b id="dndTitle">松开即可加入队列</b>
+    <small id="dndSub">支持文档与文件夹，不受支持的文件会自动跳过</small>
   </div>
 </div>
 
