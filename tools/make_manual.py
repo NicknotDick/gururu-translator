@@ -97,10 +97,23 @@ def bullet(doc, text, level=0):
     return p
 
 
-def numbered(doc, text):
-    p = doc.add_paragraph(style="List Number")
+_NUM = {"n": 0}
+
+
+def numbered(doc, text, first=False):
+    """编号列表。first=True 表示本组第一条，编号从 1 重新开始。
+
+    不使用 Word 的 List Number 样式，避免编号跨章节连续累加。
+    """
+    if first:
+        _NUM["n"] = 0
+    _NUM["n"] += 1
+    p = doc.add_paragraph()
+    p.paragraph_format.left_indent = Cm(0.85)
+    p.paragraph_format.first_line_indent = Cm(-0.85)
     p.paragraph_format.space_after = Pt(3)
     p.paragraph_format.line_spacing = 1.45
+    set_font(p.add_run(f"{_NUM['n']}. "), size=10.5, bold=True)
     set_font(p.add_run(text), size=10.5)
     return p
 
@@ -250,7 +263,7 @@ def build() -> Path:
         ("版本", VER),
         ("构建时间", f"{VP['date']} {VP['time']}"),
         ("作者", AUTHOR),
-        ("文档日期", "2026-10-29"),
+        ("文档日期", "2026-10-30"),
     ):
         p = doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -327,6 +340,9 @@ def build() -> Path:
           widths=[5.0, 10.2])
 
     tip(doc, "首次启动需要把 59 MB 的程序解包到临时目录，约需 6～8 秒；之后每次启动时间基本相同，属单文件打包的固有代价。")
+    tip(doc, "若程序目录不可写（例如放在 Program Files），程序会自动把 data 与 output 转存到"
+             " %LOCALAPPDATA%\\Gururu 翻译\\，仍可正常启动；设置 → 缓存与运行中的「数据目录」"
+             "会显示实际位置。如需「配置随软件走」，请把软件移到普通可写目录。", "注意")
 
     h2(doc, "2.3  重复启动时的处理")
     para(doc, "程序同一时间只允许运行一个实例。若已在运行，再次双击会弹出三选对话框：")
@@ -392,7 +408,7 @@ def build() -> Path:
     # ---------- 5 文本翻译 ----------
     h1(doc, "5  文本翻译")
     h2(doc, "5.1  基本流程")
-    numbered(doc, "在左侧文本框粘贴或输入原文，右上角实时显示字数与行数。")
+    numbered(doc, "在左侧文本框粘贴或输入原文，右上角实时显示字数与行数。", first=True)
     numbered(doc, "选择源语言与目标语言（默认 中文 → 英语）。")
     numbered(doc, "按 Ctrl+Enter 或点击「翻译」。")
     numbered(doc, "右侧出现译文，可直接编辑，点「复制译文」取走。")
@@ -435,9 +451,12 @@ def build() -> Path:
            ["风格", "6 种语体，选择后作用于全部段落"],
            ["术语库", "可多选，命中的术语强制使用指定译法"],
            ["同时翻译页眉页脚", "勾选后连同页眉页脚文字一并翻译（Word/PDF）"],
+           ["同时翻译文件名", "勾选后输出文件直接使用译名（英文自动词首大写、非法字符自动清理）；"
+                          "此时设置 → 常规中的「输出文件名后缀」自动置灰失效"],
            ["完成后自动输出译文", "翻译结束自动写文件；取消勾选则仅在预览中查看"],
            ["输出目录", "点击显示路径的按钮打开该目录，点右侧「…」更换目录"]],
           widths=[4.0, 11.2])
+    image(doc, "11-docs-transname.png", "图 6-2  文档翻译页：翻译选项中的「同时翻译文件名」")
 
     h2(doc, "6.4  队列与状态")
     para(doc, "每行显示文件名、扩展名、实时进度、段数与操作按钮。状态含义：")
@@ -448,6 +467,11 @@ def build() -> Path:
     h2(doc, "6.5  输出规则")
     para(doc, "输出文件默认写入设置中的输出目录，文件名追加「_译文」后缀，例如 "
               "「技术服务合同.docx」→「技术服务合同_译文.docx」。同名文件会被覆盖。")
+    para(doc, "勾选「同时翻译文件名」后，输出直接使用译名而不再追加后缀，例如 "
+              "「季度财务报告.docx」→「Quarterly Financial Report.docx」；"
+              "译名中的 \\ / : * ? \" < > | 等非法字符会被自动清理，超过 80 字会截断。")
+    tip(doc, "输出目录不可写时（例如指向 Program Files），程序会自动把译文转存到默认输出目录，"
+             "并在任务行的警告中提示实际保存位置，不会丢失翻译结果。", "注意")
 
     # ---------- 7 预览与 AI 调整 ----------
     h1(doc, "7  预览与 AI 调整")
@@ -455,18 +479,39 @@ def build() -> Path:
     para(doc, "翻译完成后点击队列行的「✎」进入预览。左栏为原文（只读），右栏为译文（可直接编辑）。")
     image(doc, "05-preview.png", "图 7-1  预览调整：逐段对照与底部 AI 指令栏")
 
-    h2(doc, "7.2  逐段修改与全部重译")
+    h2(doc, "7.2  视图切换：逐段对照 / 全文预览")
+    para(doc, "预览页顶部提供两种视图，随时可切换，改动在两种视图间实时同步：")
+    table(doc, ["视图", "用途与特点"],
+          [["逐段对照", "左栏原文、右栏译文逐段并列，适合逐句校对与精细修改"],
+           ["全文预览", "按幻灯片页 / PDF 页 / Excel 工作表分组，以连续文档流通篇呈现，"
+                     "适合查看整体版式与段落分布；译文同样可直接编辑"]],
+          widths=[3.4, 11.8])
+    image(doc, "10-preview-full.png", "图 7-2  全文预览：通篇查看译文布局")
+
+    h2(doc, "7.3  显示设置（全文预览）")
+    para(doc, "全文预览模式下点顶部「显示设置」可调整呈现方式，三项设置会自动记住，下次打开保持：")
+    table(doc, ["设置项", "可选值与效果"],
+          [["显示效果", "默认 / 高亮（译文加底色）/ 分割线（译文上方虚线）/ 引用（左侧竖线）/ "
+                     "模糊（弱化原文、突出译文）。仅作用于译文，每项都带实时示例"],
+           ["译文字体", "默认、微软雅黑、宋体、黑体、楷体、仿宋、Times New Roman、Arial、Calibri、Georgia"],
+           ["分布方式", "上下同段（原文在上、译文在下）/ 左右对照（原文左栏、译文右栏）"]],
+          widths=[3.4, 11.8])
+    image(doc, "12-pv-display-settings.png", "图 7-3  显示设置面板：效果、字体与分布方式")
+    tip(doc, "超长文档（上千段）在全文预览下为一次性渲染，打开可能变慢；"
+             "此时切回「逐段对照」编辑即可。", "建议")
+
+    h2(doc, "7.4  逐段修改与全部重译")
     bullet(doc, "在右栏直接修改文字，改动即时写回内存；被修改的段落状态点变为蓝色")
     bullet(doc, "切换风格或术语库后点「全部重译」，可整篇重译，已手动修改的段落会被保留")
 
-    h2(doc, "7.3  AI 调整")
+    h2(doc, "7.5  AI 调整")
     para(doc, "需先在设置中配置大模型 API Key。用法：")
-    numbered(doc, "点击左栏原文可选中该段落（再点一次取消），不选则作用于全部。")
+    numbered(doc, "点击左栏原文可选中该段落（再点一次取消），不选则作用于全部。", first=True)
     numbered(doc, "在底部指令框写明要求，例如「更正式一些」「压缩到原句一半」「统一把接口改称 API」。")
     numbered(doc, "点「AI 调整」或按回车，仅将受影响段落送模型，返回后原地刷新。")
     para(doc, "被 AI 改写的段落状态点变为紫色，统计行显示「AI 润色 N」。")
 
-    h2(doc, "7.4  保存输出")
+    h2(doc, "7.6  保存输出")
     para(doc, "顶部可切换输出模式，点「保存输出」按当前设置重写文件。"
               "预览中的修改、AI 调整结果都会写入，不会丢失。")
 
@@ -512,10 +557,17 @@ def build() -> Path:
           [["记忆条目 / 本次命中率", "翻译记忆规模与本次会话的复用比例"],
            ["版本 / 构建时间", "当前程序版本（Ver. + 打包时刻）与构建时间"],
            ["数据目录", "配置、缓存、日志所在路径"],
+           ["配置文件", "当前生效配置的完整路径；标注「内嵌出厂配置」表示本程序已内置出厂设置，"
+                     "标注「便携降级模式」表示程序目录不可写、配置已转存到系统目录"],
+           ["导出配置", "把当前配置另存为随身 JSON，用于备份或迁移到其他机器"],
+           ["导入配置", "从之前导出的 JSON 恢复配置，导入后立即刷新界面"],
+           ["固化为出厂默认", "把当前配置（含本机加密的 API Key）写入软件目录的「出厂配置.json」，"
+                       "随软件文件夹一起迁移。程序目录不可写时会提示失败"],
            ["创建桌面快捷方式", "在当前用户桌面生成指向本程序的快捷方式，重复点击会覆盖更新"],
            ["打开数据目录", "在资源管理器中打开 data 目录"],
            ["清空翻译记忆", "删除全部缓存条目，不可恢复"]],
           widths=[4.6, 10.6])
+    image(doc, "13-settings-config.png", "图 8-3  设置页：缓存与运行（配置导出、导入、固化与文件位置）")
 
     # ---------- 9 托盘 ----------
     h1(doc, "9  托盘与窗口行为")
@@ -528,22 +580,45 @@ def build() -> Path:
     # ---------- 10 数据与备份 ----------
     h1(doc, "10  数据与备份")
     h2(doc, "10.1  目录结构")
-    para(doc, "data\\settings.json　配置（含加密后的 API Key）", mono=True, size=9.5, space_after=2)
-    para(doc, "data\\tm.db　　　　　翻译记忆缓存", mono=True, size=9.5, space_after=2)
-    para(doc, "data\\terms.json　　　自建术语库", mono=True, size=9.5, space_after=2)
-    para(doc, "data\\logs\\app.log　　运行日志", mono=True, size=9.5, space_after=2)
-    para(doc, "output\\　　　　　　 译文输出", mono=True, size=9.5, space_after=10)
+    para(doc, "data\\settings.json　　配置（含加密后的 API Key）", mono=True, size=9.5, space_after=2)
+    para(doc, "data\\tm.db　　　　　　翻译记忆缓存", mono=True, size=9.5, space_after=2)
+    para(doc, "data\\terms.json　　　　自建术语库", mono=True, size=9.5, space_after=2)
+    para(doc, "data\\logs\\app.log　　　运行日志", mono=True, size=9.5, space_after=2)
+    para(doc, "出厂配置.json　　　　　便携出厂配置（点「固化为出厂默认」后生成，随软件迁移）",
+         mono=True, size=9.5, space_after=2)
+    para(doc, "output\\　　　　　　　译文输出", mono=True, size=9.5, space_after=10)
 
-    h2(doc, "10.2  备份与迁移")
+    h2(doc, "10.2  配置随软件分发")
+    para(doc, "程序启动时按以下顺序确定配置，后者覆盖前者：")
+    table(doc, ["优先级", "来源", "说明"],
+          [["1（最低）", "内置默认值", "程序内置的出厂参数"],
+           ["2", "内嵌出厂配置", "打包时烧入 EXE 的设置，新机器首次打开即为配置好的状态"],
+           ["3", "出厂配置.json", "位于软件目录，由「固化为出厂默认」生成，随文件夹迁移"],
+           ["4（最高）", "data\\settings.json", "用户在本机的实际配置"]],
+          widths=[2.6, 4.4, 8.2])
+    para(doc, "要让配置跟着软件走，有两种方式：")
+    numbered(doc, "迁移整个文件夹：把软件目录（含 data 与 output）整体拷贝到新机器或 U 盘。", first=True)
+    numbered(doc, "先固化再迁移：在设置页配置好并保存，点「固化为出厂默认」，"
+                  "之后即使不带 data 目录，只拷 EXE 与「出厂配置.json」也能恢复配置。")
+    tip(doc, "Windows 不允许运行中的程序改写自身 EXE，因此「配置固化进软件」以软件目录下的"
+             "「出厂配置.json」实现——效果等同，且随时可以重新固化。", "原理")
+    tip(doc, "API Key 使用 Windows DPAPI 加密且绑定本机账户：本机固化后可直接使用；"
+             "换电脑会解密失败，届时在设置页重新填写一次即可。", "注意")
+
+    h2(doc, "10.3  备份与迁移")
     para(doc, "整个程序文件夹（含 data 与 output）直接拷贝即可完成迁移或备份。"
               "换到新机器后若 API Key 因 DPAPI 无法解密，重新填写一次即可。")
+    para(doc, "输出目录按「相对程序目录」的方式保存，因此把软件整体移到别的盘符或电脑后，"
+              "输出目录会自动指向新位置的 output，无需重新设置。")
 
-    h2(doc, "10.3  关键配置项")
+    h2(doc, "10.4  关键配置项")
     table(doc, ["字段", "含义"],
           [["ui.theme / ui.lang / ui.start_page", "色调、界面语言、启动页"],
            ["engine.active / engine.llm.*", "默认引擎与大模型参数"],
            ["translate.src / tgt / style / mode / term_sets", "默认语言方向、风格、输出模式、术语库"],
-           ["output.dir / suffix / auto_save", "输出目录、后缀、自动写盘"],
+           ["output.dir / suffix / auto_save / translate_name",
+            "输出目录（相对程序目录存储）、文件名后缀、自动写盘、是否翻译文件名"],
+           ["preview.fx / font / dist", "全文预览的显示效果、译文字体、分布方式"],
            ["tm.enabled", "是否启用翻译记忆"]],
           widths=[6.0, 9.2])
 
@@ -570,6 +645,19 @@ def build() -> Path:
          "单文件打包程序偶发误报，可将程序目录加入信任区；文件哈希可在交付记录中核对。"),
         ("能翻译扫描件 PDF 吗？",
          "不能。当前版本无 OCR，扫描件（无文字层）会提示未找到可翻译文字。"),
+        ("提示「写回失败 PermissionError」怎么办？",
+         "翻译本身已完成，只是保存译文时被系统拒绝——多半是输出目录指向了 Program Files 等受保护位置。"
+         "把输出目录改到普通可写目录即可；新版本会自动转存并在任务警告中提示实际保存位置。"),
+        ("启动时报「Access is denied: ...\\data」？",
+         "程序目录不可写。请把整个软件文件夹移到普通目录（如 D:\\Gururu 翻译），"
+         "或以管理员身份运行一次；新版本会自动降级到 %LOCALAPPDATA%\\Gururu 翻译 而不崩溃。"),
+        ("换电脑后配置还在吗？",
+         "在。要么整个软件文件夹一起拷贝，要么先在原机器点「固化为出厂默认」再拷贝 EXE 与"
+         "「出厂配置.json」。注意 API Key 为 DPAPI 本机加密，换机后需在设置页重新填写。"),
+        ("「固化为出厂默认」点了提示失败？",
+         "说明程序目录不可写（常见于 Program Files）。把软件移到普通目录后重试即可。"),
+        ("全文预览打开很慢？",
+         "全文预览为一次性渲染全部段落，上千段的长文档会变慢。切回「逐段对照」即可流畅编辑。"),
     ]
     for q, a in qa:
         h3(doc, "Q：" + q)
