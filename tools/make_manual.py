@@ -297,8 +297,9 @@ def build() -> Path:
     h2(doc, "1.1  这是什么")
     para(doc, "Gururu 翻译 是一款 Windows 单文件绿色版翻译工具。双击即可运行，无需安装、"
               "不写注册表，所有配置与产出都保存在程序同级目录，整个文件夹可拷到 U 盘随身使用。")
-    para(doc, "它把三件事做在一起：查词、文本翻译、文档保版翻译。文档翻译支持 Word、Excel、"
-              "PowerPoint、PDF、Visio、Markdown、纯文本与 EPUB 八种格式，输出文件自动加「_译文」后缀，"
+    para(doc, "它把三件事做在一起：查词、文本翻译、文档保版翻译。文档翻译支持 Word(.docx)、"
+              "Excel(.xlsx/.xlsm)、PowerPoint(.pptx)、PDF、Visio(.vsdx)、Markdown(.md)、"
+              "纯文本(.txt) 与 EPUB(.epub) 八种格式，输出文件自动加「_译文」后缀，"
               "并在翻译完成后提供预览界面逐段修改、或让 AI 按自然语言指令调整译文。")
 
     h2(doc, "1.2  核心能力一览")

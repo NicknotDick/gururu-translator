@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from ..config import settings
-from ..parsers.registry import SUPPORTED_EXTS, is_supported
+from ..parsers.registry import LEGACY_MAP, SUPPORTED_EXTS, is_supported
 from .bus import bus
 from .i18n import tr
 from .ir import STATUS_EDITED, DocumentIR
@@ -85,7 +85,8 @@ class JobManager:
                     skipped.append(f"{p.name}（文件不存在）")
                     continue
                 if not is_supported(str(p)):
-                    skipped.append(f"{p.name}（格式不支持）")
+                    hint = LEGACY_MAP.get(Path(p).suffix.lower())
+                    skipped.append(f"{p.name}：{hint}" if hint else f"{p.name}（格式不支持）")
                     continue
                 if self._append(p):
                     added += 1

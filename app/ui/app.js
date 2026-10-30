@@ -42,8 +42,8 @@ const EN = {
   '输出目录': 'Output folder',
   '点击选择文件': 'Click to choose',
   '或 把文件拖到这里': 'or drag files here',
-  '支持 Word · Excel · PPT · PDF · Visio · Markdown · TXT · EPUB，也可直接拖入整个文件夹':
-    'Word · Excel · PPT · PDF · Visio · Markdown · TXT · EPUB — folders can be dropped too',
+  '支持 .docx · .xlsx/.xlsm · .pptx · .pdf · .vsdx · .md · .txt · .epub，也可直接拖入整个文件夹':
+    'Supported: .docx · .xlsx/.xlsm · .pptx · .pdf · .vsdx · .md · .txt · .epub — folders can be dropped too',
   '松开即可加入队列': 'Release to add to the queue',
   '支持文档与文件夹，不受支持的文件会自动跳过': 'Documents and folders; unsupported files are skipped',
   '队列为空，先添加文件': 'Queue is empty — add files first',
@@ -787,7 +787,7 @@ function openAbout() {
   $('abData').textContent = b.data_dir || '—';
   $('abData').title = b.data_dir || '';
   const fm = (b.formats || [])
-    .map((f) => `<span class="chip">${esc(String(f.ext).replace('.', '').toUpperCase())}</span>`)
+    .map((f) => `<span class="chip">${esc((f.exts || [f.ext]).map((e) => String(e).replace('.', '').toUpperCase()).join('/'))}</span>`)
     .join('');
   $('abFormats').innerHTML = fm || '<span class="dim">—</span>';
   $('about').classList.remove('hidden');
