@@ -10,6 +10,7 @@ from pathlib import Path
 APP_NAME = "Gururu 翻译"
 AUTHOR = "Gururu Nick"
 BRAND = "Ver."   # 版本号前缀，统一 Ver.YYMMDDHHMM
+REPO_URL = "https://github.com/NicknotDick/gururu-translator"  # 项目主页
 
 try:
     from ._stamp import STAMP as _STAMP  # type: ignore

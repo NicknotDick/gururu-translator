@@ -790,6 +790,15 @@ function openAbout() {
     .map((f) => `<span class="chip">${esc((f.exts || [f.ext]).map((e) => String(e).replace('.', '').toUpperCase()).join('/'))}</span>`)
     .join('');
   $('abFormats').innerHTML = fm || '<span class="dim">—</span>';
+  const repo = b.repo_url || '';
+  const abRepo = $('abRepo');
+  if (repo) {
+    abRepo.href = repo;
+    abRepo.textContent = 'GitHub ↗';
+    abRepo.style.display = '';
+  } else {
+    abRepo.style.display = 'none';
+  }
   $('about').classList.remove('hidden');
 }
 

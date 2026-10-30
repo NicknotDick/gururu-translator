@@ -20,7 +20,7 @@ from ..core.tm import tm
 from ..engines.chain import Translator, test_llm
 from ..parsers.registry import SUPPORTED_EXTS, describe
 from ..paths import app_dir, data_dir, open_in_explorer, using_fallback as paths_using_fallback
-from ..version import APP_NAME, AUTHOR, version, version_parts
+from ..version import APP_NAME, AUTHOR, REPO_URL, version, version_parts
 
 APP_TITLE = APP_NAME
 APP_VERSION = version()
@@ -53,6 +53,7 @@ class Bridge:
             "providers": PROVIDERS,
             "formats": describe(),
             "exts": list(SUPPORTED_EXTS),
+            "repo_url": REPO_URL,
             "settings": cfg,
             "has_key": bool(key),
             "key_mask": (key[:4] + "********" + key[-4:]) if len(key) > 8 else ("已配置" if key else ""),

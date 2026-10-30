@@ -541,6 +541,11 @@ button.accent:hover { background: var(--accent-soft-hover); color: var(--fg); bo
   color: var(--fg); font-weight: 500; max-width: 64%;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right;
 }
+.about-body .kv a.link {
+  color: var(--accent); text-decoration: none; font-weight: 500; max-width: 64%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right;
+}
+.about-body .kv a.link:hover { color: var(--accent2); text-decoration: underline; }
 .about-formats { display: flex; flex-direction: column; gap: 7px; padding-top: 10px; }
 .about-formats > span { font-size: 11px; color: var(--fg3); }
 .about-formats > div { display: flex; flex-wrap: wrap; gap: 6px; }
