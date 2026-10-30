@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import ctypes
+import ctypes.wintypes as wt
 import logging
 import os
 import sys
@@ -62,6 +63,62 @@ def _window_icon() -> str | None:
         return None
 
 
+def _main_hwnd() -> int:
+    """按窗口标题定位主窗口句柄。"""
+    try:
+        return int(ctypes.windll.user32.FindWindowW(None, APP_TITLE) or 0)
+    except Exception:
+        return 0
+
+
+def reveal_main_window() -> bool:
+    """把主窗口恢复到可见前台。
+
+    最小化到托盘时窗口会被 hide，且 WinForms 会把它挪到虚拟屏幕之外
+    （实测 rect 约 -18000）并保持 showCmd=2（最小化）。这种状态下
+    pywebview 的 restore()+show() 实测无效，必须直接用 Win32 API 兜底：
+    先 SW_RESTORE / SW_SHOW，再修正屏幕外坐标，最后提到前台。
+    """
+    log = logging.getLogger("main")
+    try:
+        u = ctypes.windll.user32
+        hwnd = _main_hwnd()
+        if not hwnd:
+            return False
+        hw = ctypes.c_void_p(hwnd)
+        if u.IsIconic(hw):
+            u.ShowWindow(hw, 9)  # SW_RESTORE
+        if not u.IsWindowVisible(hw):
+            u.ShowWindow(hw, 5)  # SW_SHOW
+        # 窗口跑到屏幕之外（拔显示器 / 远程桌面 / 最小化到托盘）时拉回主屏
+        r = wt.RECT()
+        u.GetWindowRect(hw, ctypes.byref(r))
+        vx, vy = u.GetSystemMetrics(76), u.GetSystemMetrics(77)
+        vw, vh = u.GetSystemMetrics(78), u.GetSystemMetrics(79)
+        cx, cy = (r.left + r.right) // 2, (r.top + r.bottom) // 2
+        if not (vx - 200 <= cx <= vx + vw + 200 and vy - 200 <= cy <= vy + vh + 200):
+            log.info("窗口位于屏幕外 (%d,%d)，移回主屏", cx, cy)
+            u.SetWindowPos(hw, 0, vx + 80, vy + 80, 0, 0, 0x0001 | 0x0004)  # NOSIZE|NOZORDER
+        # 提到前台；前台锁定导致失败时，用输入线程附加兜底
+        if not u.SetForegroundWindow(hw):
+            fg = u.GetForegroundWindow()
+            tid = u.GetWindowThreadProcessId(ctypes.c_void_p(fg), None) if fg else 0
+            ctid = u.GetCurrentThreadId()
+            attached = False
+            if tid and tid != ctid:
+                attached = bool(u.AttachThreadInput(tid, ctid, True))
+                u.SetForegroundWindow(hw)
+            u.BringWindowToTop(hw)
+            if attached:
+                u.AttachThreadInput(tid, ctid, False)
+        ok = bool(u.IsWindowVisible(hw)) and not bool(u.IsIconic(hw))
+        log.info("强制显示主窗口：%s", "成功" if ok else "仍未可见")
+        return ok
+    except Exception:
+        logging.getLogger("main").exception("强制显示主窗口失败")
+        return False
+
+
 def start_tray(window) -> object | None:
     """系统托盘：最小化后驻留通知区，双击恢复，右键可退出。"""
     import time
@@ -79,11 +136,20 @@ def start_tray(window) -> object | None:
         return None
 
     def _show(*_a) -> None:
+        log.info("托盘：显示主窗口")
         try:
             window.restore()
             window.show()
         except Exception:
-            log.exception("恢复窗口失败")
+            log.exception("pywebview 恢复窗口失败")
+        # 兜底：窗口被 hide 后仍停在最小化态（且位于屏幕外）时，上面的调用实测无效
+        u = ctypes.windll.user32
+        hwnd = _main_hwnd()
+        if not hwnd:
+            return
+        hw = ctypes.c_void_p(hwnd)
+        if not u.IsWindowVisible(hw) or u.IsIconic(hw):
+            reveal_main_window()
 
     def _hide(*_a) -> None:
         try:
@@ -175,6 +241,8 @@ def close_existing(timeout: float = 4.0) -> bool:
 
 def focus_existing() -> bool:
     """把已在运行的实例窗口提到前台，避免用户以为程序没反应。"""
+    if reveal_main_window():
+        return True
     try:
         hwnd = ctypes.windll.user32.FindWindowW(None, APP_TITLE)
         if not hwnd:
@@ -416,6 +484,38 @@ def main() -> int:
             log.info("MIN_TEST before_visible=%s after_visible=%s", before, after)
 
         threading.Timer(1.0, _min_test).start()
+
+    if os.environ.get("WB_TEST_TRAY"):
+        def _tray_test() -> None:
+            import time as _t
+
+            u = ctypes.windll.user32
+            _t.sleep(2.5)
+            hwnd = u.FindWindowW(None, APP_TITLE)
+            try:
+                window.minimize()
+            except Exception:
+                log.exception("minimize 调用失败")
+            _t.sleep(1.5)
+            v1 = bool(u.IsWindowVisible(hwnd)) if hwnd else None
+            i1 = bool(u.IsIconic(hwnd)) if hwnd else None
+            try:
+                window.restore()
+                window.show()
+            except Exception:
+                log.exception("restore/show 调用失败")
+            _t.sleep(1.5)
+            v2 = bool(u.IsWindowVisible(hwnd)) if hwnd else None
+            i2 = bool(u.IsIconic(hwnd)) if hwnd else None
+            log.info("TRAY_TEST hwnd=%s v_min=%s iconic_min=%s v_pywebview=%s iconic_py=%s",
+                     hwnd, v1, i1, v2, i2)
+            if hwnd and (not v2 or i2):
+                ok = reveal_main_window()
+                _t.sleep(0.8)
+                log.info("TRAY_TEST fallback=%s v_final=%s iconic_final=%s", ok,
+                         bool(u.IsWindowVisible(hwnd)), bool(u.IsIconic(hwnd)))
+
+        threading.Timer(1.0, _tray_test).start()
 
     shot = os.environ.get("WB_SHOT")
 
