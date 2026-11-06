@@ -1407,16 +1407,24 @@ function renderDictLocal(res, word) {
 
 // 双击查词结果中的单词/短语：立即以该词重新查词，结果留在当前查词界面
 const _DICT_TRIM = /^[\\s·.,;:!?。，、；：！？…“”‘’()（）【】《》「」『』\-—_]+|[\\s·.,;:!?。，、；：！？…“”‘’()（）【】《》「」『』\-—_]+$/g;
+const _DICT_WORD_SEL = '.dict-word, .dict-phon, .dict-senses > div, .dict-group li, .dict-enc-sum, .dict-cap';
+function _extractDictWord(e) {
+  // 优先读取双击产生的文本选区
+  const sel = (window.getSelection && window.getSelection().toString()) || '';
+  let word = sel.trim();
+  if (word) return word;
+  // 兜底：选区为空（部分 WebView 不生成选区）时，取点击元素内最近的单词容器文本
+  const el = e.target.closest(_DICT_WORD_SEL);
+  if (el) word = (el.textContent || '').trim();
+  return word;
+}
 function initDictDblClick() {
   const body = document.getElementById('dictBody');
   if (!body) return;
   body.addEventListener('dblclick', (e) => {
     // 交互元素(按钮/链接)自身已绑定行为，跳过以免重复触发
     if (e.target.closest('button, a')) return;
-    const sel = (window.getSelection && window.getSelection().toString()) || '';
-    let word = (sel || '').trim();
-    if (!word) return;
-    word = word.replace(_DICT_TRIM, '').trim();
+    let word = _extractDictWord(e).replace(_DICT_TRIM, '').trim();
     if (!word || word.length > 40) return;
     dictSuggest(word);
   });

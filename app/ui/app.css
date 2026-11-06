@@ -442,6 +442,10 @@ button.accent:hover { background: var(--accent-soft-hover); color: var(--fg); bo
 }
 .dict-tip { font-size: 11px; color: var(--fg3); white-space: nowrap; }
 .dict-body { flex: 1; overflow: auto; display: flex; flex-direction: column; gap: 12px; padding-bottom: 8px; }
+/* 查词结果需允许选词，否则双击无法产生选区（全局 user-select:none 会让双击追查失效） */
+.dict-body, .dict-body .dict-card, .dict-body .dict-word, .dict-body .dict-phon,
+.dict-body .dict-senses, .dict-body .dict-senses > div, .dict-body .dict-group li,
+.dict-body .dict-enc-sum, .dict-body .dict-cap { user-select: text; }
 .dict-empty { color: var(--fg3); font-size: 12.5px; padding: 48px 0; text-align: center; }
 .dict-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
 .dict-src { font-size: 11px; color: var(--fg3); letter-spacing: .3px; margin-bottom: 10px; }
@@ -469,8 +473,8 @@ button.accent:hover { background: var(--accent-soft-hover); color: var(--fg); bo
 .dict-cap { margin-top: 9px; font-size: 11.5px; color: var(--fg3); line-height: 1.5;
   border-left: 2px solid var(--line); padding-left: 8px; }
 /* 结果文本可双击查词：提示可交互 */
-.dict-senses, .dict-group li, .dict-enc-sum { cursor: default; }
-.dict-senses:hover, .dict-group li:hover, .dict-enc-sum:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.dict-word, .dict-phon, .dict-senses, .dict-senses > div, .dict-group li, .dict-enc-sum, .dict-cap { cursor: pointer; }
+.dict-senses:hover, .dict-group li:hover, .dict-enc-sum:hover, .dict-senses > div:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
 
 /* ---------- 底部状态栏 ---------- */
 .statusbar {
