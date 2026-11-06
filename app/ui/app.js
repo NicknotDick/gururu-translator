@@ -453,6 +453,7 @@ function bindEvents() {
   $('btnLookup').onclick = doLookup;
   $('dictInput').addEventListener('input', onDictInput);
   $('dictInput').addEventListener('blur', () => setTimeout(closeSug, 150));
+  initDictDblClick();
   $('dictInput').addEventListener('keydown', (e) => {
     if (!sugOpen) {
       if (e.key === 'Enter') doLookup();
@@ -1341,6 +1342,7 @@ function loadSettingsForm(b) {
 /* ---------------- 查词 ---------------- */
 const DICT_NAMES = {
   youdao: { zh: '有道词典', en: 'Youdao' },
+  youdao_cn: { zh: '有道汉语词典', en: 'Youdao Chinese' },
   freedict: { zh: 'Free Dictionary 英文释义', en: 'Free Dictionary (English)' },
   local: { zh: '内置离线词典', en: 'Built-in dictionary' },
 };
@@ -1383,6 +1385,10 @@ function renderDictLocal(res, word) {
     if (e.forms && e.forms.length) {
       badges.push(`<span class="dict-badge">${esc(e.forms.join(' / '))}</span>`);
     }
+    const caption = e.reverse_cjk
+      ? `<div class="dict-cap">${L('离线反查：以下为内置英汉词典中释义含该中文词的英文对应词',
+          'Offline reverse match: English headwords whose gloss contains this Chinese term')}</div>`
+      : '';
     box.innerHTML = `<div class="dict-card">
       <div class="dict-src">${dictName('local')}</div>
       <div class="dict-head">
@@ -1390,11 +1396,29 @@ function renderDictLocal(res, word) {
         ${e.phonetic ? `<span class="dict-phon">/${esc(e.phonetic)}/</span>` : ''}
         <span class="dict-badges">${badges.join('')}</span>
       </div>
+      ${caption}
       <div class="dict-senses">${e.senses.map((s) => `<div>${esc(s)}</div>`).join('')}</div>
     </div>`;
   }
   box.querySelectorAll('.dict-more button').forEach((b) => {
     b.onclick = () => dictSuggest(b.dataset.w);
+  });
+}
+
+// 双击查词结果中的单词/短语：立即以该词重新查词，结果留在当前查词界面
+const _DICT_TRIM = /^[\\s·.,;:!?。，、；：！？…“”‘’()（）【】《》「」『』\-—_]+|[\\s·.,;:!?。，、；：！？…“”‘’()（）【】《》「」『』\-—_]+$/g;
+function initDictDblClick() {
+  const body = document.getElementById('dictBody');
+  if (!body) return;
+  body.addEventListener('dblclick', (e) => {
+    // 交互元素(按钮/链接)自身已绑定行为，跳过以免重复触发
+    if (e.target.closest('button, a')) return;
+    const sel = (window.getSelection && window.getSelection().toString()) || '';
+    let word = (sel || '').trim();
+    if (!word) return;
+    word = word.replace(_DICT_TRIM, '').trim();
+    if (!word || word.length > 40) return;
+    dictSuggest(word);
   });
 }
 

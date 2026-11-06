@@ -23,6 +23,49 @@ _SUFFIX = (
 )
 
 
+def _is_cjk(text: str) -> bool:
+    """是否包含中日韩(含中文)字符——用于区分中英文查词路径。"""
+    return bool(re.search(r"[\u3000-\u9fff\uff00-\uffef]", text or ""))
+
+
+def _lookup_local_cjk(conn, w: str) -> dict:
+    """离线反查：内置英汉词典按中文释义模糊匹配，给出英文对应词。
+
+    内置词典为英→中，没有中文主键；中文查词采用反向匹配 trans 列，
+    返回发音/释义中包含该中文词的英文词条，作为离线下的『中文→英文』提示。
+    """
+    rows = conn.execute(
+        "SELECT word, trans FROM entries WHERE trans LIKE ? "
+        "ORDER BY CASE WHEN bnc > 0 THEN 0 ELSE 1 END, bnc LIMIT 8",
+        ("%" + w + "%",),
+    ).fetchall()
+    seen: set[str] = set()
+    senses: list[str] = []
+    for word, trans in rows:
+        if word.lower() in seen:
+            continue
+        seen.add(word.lower())
+        raw = (trans or "")
+        # trans 以字面 \\n 换行，取首条释义并截断
+        first = raw.split("\\n")[0] if "\\n" in raw else raw
+        gloss = first.strip()[:64]
+        senses.append(f"{word} — {gloss}")
+    if not senses:
+        return {
+            "ok": True, "hit": False, "query": w, "matched": "",
+            "entry": None, "suggestions": [],
+        }
+    entry = {
+        "word": w, "phonetic": "", "senses": senses, "pos": "", "tag": "",
+        "collins": 0, "oxford": 0, "frq": 0, "bnc": 0, "forms": [],
+        "reverse_cjk": True,
+    }
+    return {
+        "ok": True, "hit": True, "query": w, "matched": w,
+        "entry": entry, "suggestions": [],
+    }
+
+
 def _connect() -> sqlite3.Connection | None:
     path = resource(DB_NAME)
     if not path.exists():
@@ -77,6 +120,9 @@ def lookup_local(word: str) -> dict:
     if conn is None:
         return {"ok": False, "error": "no-dict"}
     try:
+        # 中文查词：内置词典为英汉，走离线反向匹配
+        if _is_cjk(w):
+            return _lookup_local_cjk(conn, w)
         cols = "word, phonetic, trans, pos, tag, collins, oxford, frq, bnc, exchange"
         row = None
         matched = ""
@@ -140,6 +186,8 @@ def suggest_local(text: str, limit: int = 8) -> list[dict]:
     conn = _connect()
     if conn is None:
         return []
+    if _is_cjk(text):
+        return _suggest_cjk(conn, text, limit)
     out: list[dict] = []
     seen: set[str] = set()
 
@@ -179,6 +227,30 @@ def suggest_local(text: str, limit: int = 8) -> list[dict]:
         return out[:limit]
     finally:
         conn.close()
+
+
+def _suggest_cjk(conn, text: str, limit: int = 8) -> list[dict]:
+    """离线中文联想：反向匹配 trans，给出英文对应词。"""
+    w = (text or "").strip()
+    if not w:
+        return []
+    rows = conn.execute(
+        "SELECT word, trans FROM entries WHERE trans LIKE ? "
+        "ORDER BY CASE WHEN bnc > 0 THEN 0 ELSE 1 END, bnc LIMIT ?",
+        ("%" + w + "%", limit),
+    ).fetchall()
+    out: list[dict] = []
+    seen: set[str] = set()
+    for word, trans in rows:
+        if word.lower() in seen:
+            continue
+        seen.add(word.lower())
+        raw = (trans or "")
+        first = raw.split("\\n")[0] if "\\n" in raw else raw
+        out.append({"word": word, "brief": first.strip()[:40]})
+        if len(out) >= limit:
+            break
+    return out
 
 
 def suggest_online(text: str, limit: int = 8) -> list[dict]:
@@ -237,6 +309,9 @@ def _youdao(word: str, timeout: int = 9) -> dict | None:
     if r.status_code >= 400:
         return None
     data = r.json()
+    # 中文查词走汉英词典(ce) + 百科(baike)
+    if _is_cjk(word):
+        return _youdao_cn(data, timeout)
     ec = data.get("ec") or {}
     node = ec
     if isinstance(ec.get("word"), list) and ec["word"]:
@@ -310,6 +385,74 @@ def _youdao(word: str, timeout: int = 9) -> dict | None:
             "source": "wikipedia/youdao",
         }
     return {"name": "youdao", "phonetic": phonetic, "senses": uniq[:12], "encyclopedia": enc}
+
+
+def _youdao_cn(data: dict, timeout: int = 9) -> dict | None:
+    """有道汉英词典(ce)解析：拼音 + 词性 + 英文对应词与中文释义。"""
+    ce = data.get("ce") or {}
+    words = (ce.get("word") or []) if isinstance(ce, dict) else []
+    if not isinstance(words, list) or not words:
+        # 回退：若 ce 为空但 ec 有数据(中英混合)，交给英文解析
+        return None
+    groups: list[dict] = []
+    phonetic = ""
+    seen_g: set[str] = set()
+
+    def push(pos: str, head: str, gloss: str) -> None:
+        line = (head + (" — " + gloss if gloss else "")).strip(" —")
+        if line and line not in seen_g:
+            seen_g.add(line)
+            groups.append({"pos": pos, "defs": [line]})
+
+    for w in words[:3]:  # 最多取 3 个同形异义词条
+        ph = (w.get("phone") or "").strip()
+        if not phonetic and ph:
+            phonetic = ph
+        for trs in (w.get("trs") or []):
+            for tr in (trs.get("tr") or []):
+                l = tr.get("l") if isinstance(tr, dict) else None
+                if not isinstance(l, dict):
+                    continue
+                pos = (l.get("pos") or "").strip()
+                gloss = (l.get("#tran") or "").strip()
+                if len(gloss) > 120:
+                    gloss = gloss[:120] + "…"
+                ens: list[str] = []
+                for it in (l.get("i") or []):
+                    if isinstance(it, dict) and it.get("#text"):
+                        ens.append(str(it["#text"]))
+                push(pos, "、".join(ens), gloss)
+
+    if not groups:
+        return None
+
+    # 百科：优先 wikipedia_digest，中文常走 baike
+    summary = ""
+    for item in ((data.get("wikipedia_digest") or {}).get("summarys") or []):
+        text = (item.get("summary") or "").strip()
+        if text:
+            summary = text
+            break
+    if not summary:
+        for item in ((data.get("baike") or {}).get("summarys") or []):
+            text = (item.get("summary") or "").strip()
+            if text:
+                summary = text
+                break
+    images = []
+    for item in ((data.get("pic_dict") or {}).get("pic") or []):
+        url = (item.get("image") or "").strip()
+        if url.startswith("http"):
+            images.append(url)
+    enc = None
+    if summary or images:
+        enc = {
+            "summary": summary[:1200],
+            "summary_lang": "zh" if re.search(r"[\u4e00-\u9fff]", summary[:80]) else "en",
+            "images": images[:3],
+            "source": "baike/youdao",
+        }
+    return {"name": "youdao_cn", "phonetic": phonetic, "groups": groups, "encyclopedia": enc}
 
 
 def _free_dictionary(word: str, timeout: int = 9) -> dict | None:
